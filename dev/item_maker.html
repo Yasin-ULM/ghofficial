@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!-- '''Plotato Engine license:
+        Copyright 2021-2023 Shark in a Hat (shark_in_a_hat@protonmail.com)
+        Supported by: Matt, CodE, hinaberg, jehefuco, KryperCreeping,
+                  cuckold_yyc, GABRIEL ALFORD, Reld, MrSuicide,
+                  Naurd, Mathieu Gouillart, BettyPage, Maximus,
+                  Theo_Malt, Alex, Foxy'sFan, Dov D Bush, Overseer,
+                  Franatique, mahena, An Anonymous Benefactor, Joe Steel,
+                  David Kindler, bsnick, BranVan, Jayjay Fan, lea,
+                  helena ho, coni, evilbiscuit, Iroquois Pliskin, Ab,
+                  Drunkmilkman, bouncy4u
+
+        Permission to use, copy, modify, and/or distribute this software
+        for any purpose with or without fee is hereby granted, provided
+        that the above copyright notice and this permission notice
+        appear in all copies.
+
+        THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
+        WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
+        WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
+        THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR
+        CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+        LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+        NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+        CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+        NOTE: While used by the original game/engine dev, this tool remains unofficial.
+              No extra effort has been made to make this editor easy to use or usable for
+              anyone else other than the person that made it. The coding is meh, comments
+              are few and far between, UI is janky with functionality hidden or unobvious.
+
+              You You want any help with this editor - feel free to arsk, but if You REALLY
+              want help - put your money where your mouth is.
+
+    ''' -->
+    <meta name="color-scheme" content="dark">
+    <script type="text/javascript" src="../brython/brython.js"></script>
+    <script type="text/javascript" src="../brython/brython_modules.js"></script>
+    <script type="text/javascript" src="../data/items.txt"></script>
+
+    <!-- "Icon, favicon, or shortcut icon, whatever works." -->
+    <link rel="shortcut icon" type="image/ico" href="../img/potato.ico">
+    <link rel="icon" type="image/ico" href="../img/potato.ico">
+
+    <title>Item Maker</title>
+    <style type="text/css">
+        *{
+            line-height: 1.4;
+            font-size: 20px;
+            font-family: monospace, monospace;
+        }
+        body{
+            background-color: rgb(90,90,90);
+            color:  white;
+            text-shadow: 1px 1px 1px black;
+            overscroll-behavior: contain;
+        }
+        textarea{
+            line-height: 1.0;            
+            font-size: 14px;
+        }
+        input{
+            line-height: 1.0;
+            margin: 2px;
+        }
+        input[type=checkbox] {
+            transform: scale(1.5);
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .button{
+            font-size: 100%;
+            text-shadow: none;
+            color: black;
+            background: rgb(210, 210, 230);
+            padding: 4px;
+            margin: 2px 0;
+            border: 1px solid gray;
+            border-radius: 2px;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        .button:hover{
+            border: 1px solid blue;
+        }
+
+        .pc_img{
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .columns{
+            display: flex;
+            gap: 5px;
+        }
+        .fix_width{
+            width:320px;
+        }
+    </style>
+</head>
+<body onload="brython( {debug:0, indexedDB:0} )">
+    <div class="columns">
+        <div class="fix_width">
+            <img class="pc_img" alt='nude' srcset="../img/pc/body.png">
+            <img id="preview_img" class="pc_img" alt='ERROR !' srcset="../img/pc/debug_sack.png">
+            <img class="pc_img" alt='hair' srcset="../img/pc/hair_hands.png">
+        </div>
+        <div>
+            <button type="button" class="button" id="next_unique" >Next unique</button>
+            <button type="button" class="button" id="next_img" >Next img</button><br>
+            ID <input type="text" id="itm_id" size="22"><br>
+            Name
+            <input type="text" id="itm_name" size="20"><br>
+            Img
+            <input type="text" id="itm_img" size="21"><br>
+            Slot
+            <select name="itm_slot" id="itm_slot">
+                <option value="top">top</option>
+                <option value="bottom">bottom</option>
+                <option value="underwear_top">underwear_top</option>
+                <option value="underwear_bottom">underwear_bottom</option>
+                <option value="stockings">stockings</option>
+                <option value="accessory">accessory</option>
+            </select><br>
+            Slutty <select name="itm_slutty" id="itm_slutty">
+                <option value="-1">-1</option>
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                </select>
+            Value $<input type="number" id="itm_value" min="0" max="10000" step="5"><br>
+
+            Tags: <br>
+            <div id="tags_div">
+                <input type="checkbox" value="clothes_top" id="clothes_top">
+                <label for="clothes_top">clothes_top</label><br>
+
+                <input type="checkbox" value="clothes_bottom" id="clothes_bottom">
+                <label for="clothes_bottom">clothes_bottom</label><br>
+
+                <input type="checkbox" value="cover_boobs" id="cover_boobs">
+                <label for="cover_boobs">cover_boobs</label><br>
+
+                <input type="checkbox" value="partial_cover_boobs" id="partial_cover_boobs">
+                <label for="partial_cover_boobs">partial_cover_boobs</label><br>
+
+                <input type="checkbox" value="cover_pussy" id="cover_pussy">
+                <label for="cover_pussy">cover_pussy</label><br>
+
+                <input type="checkbox" value="partial_cover_pussy" id="partial_cover_pussy">
+                <label for="partial_cover_pussy">partial_cover_pussy</label><br>
+
+                <input type="checkbox" value="panties" id="panties">
+                <label for="panties">panties</label><br>
+
+                <input type="checkbox" value="bra" id="bra">
+                <label for="bra">bra</label><br>
+
+                <input type="checkbox" value="school" id="school">
+                <label for="school">school</label><br>
+
+                <input type="checkbox" value="nude" id="nude">
+                <label for="nude">nude</label><br>
+
+                <input type="checkbox" value="maid" id="maid">
+                <label for="maid">maid</label><br>
+
+                <input type="checkbox" value="bdsm" id="bdsm">
+                <label for="bdsm">bdsm</label><br>
+
+                <input type="checkbox" value="sport" id="sport">
+                <label for="sport">sport</label><br>
+
+                <input type="checkbox" value="stockings" id="stockings">
+                <label for="stockings">stockings</label><br>
+
+                <input type="checkbox" value="start" id="start">
+                <label for="start">start</label><br>
+
+                <input type="checkbox" value="opaque" id="opaque">
+                <label for="opaque">opaque</label><br>
+
+                <input type="checkbox" value="swimsuit" id="swimsuit">
+                <label for="swimsuit">swimsuit</label><br>
+
+                <input type="checkbox" value="party" id="party">
+                <label for="party">party</label><br>
+
+                <input type="checkbox" value="elegant" id="elegant">
+                <label for="elegant">elegant</label><br>
+
+            </div>
+           <button type="button" class="button" id="write" >Write to textbox -></button>
+        </div>
+        <div>
+            <label class="button">
+                <input type="file" id="files" name="files" multiple>SELECT FILES...
+            </label>
+            <br>
+            Output:<br>
+            <textarea id="io_area" rows="200" cols="50"></textarea>
+        </div>
+    </div>
+    <script type="text/python">
+    from browser import document, bind, html
+    from browser import window as data
+
+    global img_list
+    img_list =[]
+
+    global unique_img_list
+    unique_img_list =[]
+
+    @bind(document['files'], 'input')
+    def get_img_names(event=None):
+        known_img =[]
+        for itm_id in data.items:
+            img = data.items[itm_id]['img']
+            if img:
+                known_img.append(img.removeprefix('img/pc/'))
+                #print(img.removeprefix('img/pc/'))
+        for fn in document['files'].files:
+            global img_list
+            global unique_img_list
+            img_list.append(fn.name)
+
+            if fn.name not in known_img:
+                unique_img_list.append(fn.name)
+
+    @bind(document['next_unique'], 'click')
+    def next_unique(event=None):
+        next_img(event, True)
+
+    @bind(document['next_img'], 'click')
+    def next_img(event=None, unique=False):
+        global img_list
+        list_to_use = img_list
+        if unique:
+            global unique_img_list
+            list_to_use = unique_img_list
+
+        if list_to_use:
+            img_name = list_to_use.pop()
+            document["itm_img"].value ='img/pc/'+ img_name
+            document["preview_img"].srcset ='../img/pc/'+img_name
+            try:
+                document["itm_id"].value = img_name.split('.')[0]
+                document["itm_name"].value = img_name.split('.')[0].replace('_', ' ').title()
+            except Exception:
+                pass
+        else:
+            document["itm_img"].value = ''
+            document["preview_img"].srcset ='error.png'
+            get_img_names()
+
+        document["itm_value"].value = 0
+        for checkbox in document.get(selector='input[type="checkbox"]'):
+            checkbox.checked = False
+
+    @bind(document['write'], 'click')
+    def dump_to_textarea(event=None):
+        itm_id = document["itm_id"].value
+        name = document["itm_name"].value
+        img = document["itm_img"].value
+        value = document["itm_value"].value
+        slot = document["itm_slot"].value
+        tags =[]
+        for checkbox in document.get(selector='input[type="checkbox"]'):
+            if checkbox.checked:
+                tags.append(checkbox.value)
+        slutty = document["itm_slutty"][document["itm_slutty"].selectedIndex].value
+        print(slutty)
+        if not itm_id:
+            return
+        document["io_area"].value += f'''"{itm_id}":{{
+        "name":"{name}",
+        "img":"{img}",
+        "slot":"{slot}",
+        "tags":{tags},
+        "slutty":{slutty},
+        "value":{value}
+        }},
+    '''
+    </script>
+</body>
+</html>
+

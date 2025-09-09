@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!-- '''Plotato Engine license:
+        Copyright 2021-2023 Shark in a Hat (shark_in_a_hat@protonmail.com)
+        Supported by: Matt, CodE, hinaberg, jehefuco, KryperCreeping,
+                  cuckold_yyc, GABRIEL ALFORD, Reld, MrSuicide,
+                  Naurd, Mathieu Gouillart, BettyPage, Maximus,
+                  Theo_Malt, Alex, Foxy'sFan, Dov D Bush, Overseer,
+                  Franatique, mahena, An Anonymous Benefactor, Joe Steel,
+                  David Kindler, bsnick, BranVan, Jayjay Fan, lea,
+                  helena ho, coni, evilbiscuit, Iroquois Pliskin, Ab,
+                  Drunkmilkman, bouncy4u
+
+        Permission to use, copy, modify, and/or distribute this software
+        for any purpose with or without fee is hereby granted, provided
+        that the above copyright notice and this permission notice
+        appear in all copies.
+
+        THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
+        WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
+        WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
+        THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR
+        CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+        LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+        NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+        CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+        NOTE: While used by the original game/engine dev, this tool remains unofficial.
+              No extra effort has been made to make this editor easy to use or usable for
+              anyone else other than the person that made it. The coding is meh, comments
+              are few and far between, UI is janky with functionality hidden or unobvious.
+
+              You You want any help with this editor - feel free to arsk, but if You REALLY
+              want help - put your money where your mouth is.
+
+    ''' -->
+    <script type="text/javascript" src="../brython/brython.js"></script>
+    <script type="text/javascript" src="../brython/brython_modules.js"></script>
+    <script type="text/javascript" src="../data/plot.txt"></script>
+
+    <!-- "Icon, favicon, or shortcut icon, whatever works." -->
+    <link rel="shortcut icon" type="image/ico" href="../img/potato.ico">
+    <link rel="icon" type="image/ico" href="../img/potato.ico">
+
+    <title>Bug Tool</title>
+    <style type="text/css">
+        :root {
+            color-scheme: dark;
+        }
+
+        *{
+            line-height: 1.4;
+            font-family: monospace, monospace;
+        }
+        body{
+            background-color: rgb(90,90,90);
+            color:  white;
+            text-shadow: 1px 1px 1px black;
+        }
+        textarea{
+            line-height: 1.0;
+            background: rgb(220, 220, 230);
+            color:  black;
+            font-size: 14px;
+        }
+        input{
+            line-height: 1.0;
+            background: rgb(220, 220, 230);
+            color:  black;
+            margin: 2px;
+        }
+        input[type=checkbox] {
+            transform: scale(1.5);
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .button{
+            font-size: 100%;
+            text-shadow: none;
+            color: black;
+            background: rgb(210, 210, 230);
+            padding: 4px;
+            margin: 2px 0;
+            border: 1px solid gray;
+            border-radius: 2px;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        .button:hover{
+            border: 1px solid blue;
+        }
+        .different {
+            outline-style: solid;
+            outline-width: 2px;
+            outline-color: red;
+        }
+    </style>
+</head>
+<body onload="brython( {debug:0, indexedDB:0} )">
+    <form autocomplete="off">
+    <div style="text-align: center;">
+        <h1>Plotato Bug Tool</h1>
+        Load Bug Report:
+        <label class="button">
+            <input type="file" id="load_bug">SELECT FILE...
+        </label>
+        <br>
+        <br>
+        <a class="button" id="write_plot" href="#" download="plot.txt">APPLY FIX SUGGESTION and SAVE 'plot.txt'</a>
+        <br>
+
+        <h2>User Comment:</h2>
+        <textarea id="bug_comment" name="bug_comment" rows="6" cols="60"></textarea>
+
+        <details>
+            <summary>
+              Save data (click to show)
+            </summary>
+            <textarea id="save_data" name="save_data" rows="20" cols="60"></textarea>
+        </details>
+    </div>
+    <div style="display: flex; flex-direction: row; flex-wrap: wrap; width: 100%; gap: 4px;">
+        <div style="display: flex; flex-direction: column; flex-basis: 100%; flex: 1;">
+            <h2>Fix Suggestion:</h2>
+            <label for="bug_node_name">name:</label>
+            <input type="text" id="bug_node_name" name="bug_node_name" size="30">
+
+            <label for="bug_next">next:</label>
+            <input type="text" list="nodes" id="bug_next" name="bug_next" size="30" >
+
+            <label for="bug_pc">PC: </label>
+            <input type="text" id="bug_pc" name="bug_pc" size="30" list='pcs'>
+
+
+            <label for="bug_txt">txt:</label>
+            <textarea id="bug_txt" name="bug_txt" rows="6" cols="60"></textarea>
+
+
+            <label for="bug_img">img:</label>
+            <input type="text" list="imgs" id="bug_img" name="bug_img" size="30">
+
+
+            <label for="bug_npc">npc:</label>
+            <input type="text" list="npcs" id="bug_npc" name="bug_npc" size="30">
+
+
+            <label for="bug_eval_jump_to">eval_jump_to:</label>
+            <input type="text" id="bug_eval_jump_to" name="bug_eval_jump_to" size="60" >
+
+            Choice:
+            <div id="bug_choice_div" style='margin-left: 10px;'>
+            </div>
+            Branch:
+            <div id="bug_branch_div" style='margin-left: 10px;'>
+            </div>
+            Cmd:
+            <div id="bug_cmd_div" style='margin-left: 10px;'>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; flex-basis: 100%; flex: 1;">
+            <h2>Original Node:</h2>
+            <label for="node_name">name:</label>
+            <input type="text" id="node_name" name="node_name" size="30">
+
+
+            <label for="next">next:</label>
+            <input type="text" list="nodes" id="next" name="next" size="30" >
+
+
+            <label for="pc">PC: </label>
+            <input type="text" id="pc" name="pc" size="30" list='pcs'>
+
+            <label for="txt">txt:</label>
+            <textarea id="txt" name="txt" rows="6" cols="60"></textarea>
+
+
+            <label for="img">img:</label>
+            <input type="text" list="imgs" id="img" name="img" size="30">
+
+            <label for="npc">npc:</label>
+            <input type="text" list="npcs" id="npc" name="npc" size="30">
+
+
+            <label for="eval_jump_to">eval_jump_to:</label>
+            <input type="text" id="eval_jump_to" name="eval_jump_to" size="60" >
+
+
+            Choice:
+            <div id="choice_div" style='margin-left: 10px;'>
+            </div>
+            Branch:
+            <div id="branch_div" style='margin-left: 10px;'>
+            </div>
+            Cmd:
+            <div id="cmd_div" style='margin-left: 10px;'>
+            </div>
+        </div>
+    </div>
+    </form>
+
+    <div style="height: 100px;"></div>
+
+    <datalist id="nodes"> </datalist>
+    <datalist id="pcs">
+        <option value="last">
+        <option value="smile">
+        <option value="happy">
+        <option value="blush">
+        <option value="neutral">
+        <option value="upset">
+        <option value="shock">
+        <option value="scripted">
+    </datalist>
+    <datalist id="ifs">
+        <option value="random_branch">
+        <option value="chance(50)">
+        <option value="is_weekend()">
+        <option value="get_weekday() in (TIME.MONDAY, TIME.TUESDAY)">
+        <option value="is_weekday(TIME.MONDAY)">
+        <option value="is_weekday(TIME.TUESDAY)">
+        <option value="is_weekday(TIME.WEDNESDAY)">
+        <option value="is_weekday(TIME.THURSDAY)">
+        <option value="is_weekday(TIME.FRIDAY)">
+        <option value="is_weekday(TIME.SATURDAY)">
+        <option value="is_weekday(TIME.SUNDAY)">
+        <option value="is_time_of_day(TIME.NIGHT,TIME.MORNING,TIME.NOON,TIME.MIDDAY,TIME.AFTERNOON,TIME.EVENING)">
+        <option value="is_time_of_day(TIME.NIGHT,TIME.EVENING)">
+        <option value="is_time_of_day(TIME.MIDDAY,TIME.AFTERNOON,TIME.EVENING)">
+        <option value="is_day()">
+        <option value="is_exposed(EXPO.BOOBS+EXPO.PUSSY, 'any')">
+        <option value="is_exposed(EXPO.PART_PUSSY+EXPO.PART_PUSSY, 'all')">
+        <option value="is_exposed(EXPO.BOTTOMLESS+EXPO.TOPLESS, 'some')">
+        <option value="match_clothes({})>0.0">
+        <option value="get_underwear()">
+        <option value="get_equipped_tagset()">
+        <option value="get_equipped(tag=None, slot=None, exclude_tag='nude')">
+        <option value="save.">
+        <option value="save.money">
+        <option value="save.max_slut">
+        <option value="save.slut">
+        <option value="counter_get('name')">
+        <option value="has_clothes_by_tag('', False)">
+        <option value="count_clothes_by_tag(tag, eqquiped_only=False)">
+        <option value="get_tce(timestamp = None)">
+        <option value="get_tce_arg(get_tce(), 'target')">
+        <option value="get_tce_arg(get_tce(), 'day')">
+        <option value="get_tce_arg(get_tce(), 'hour')">
+        <option value="get_tce_arg(get_tce(), 'map_poi')">
+        <option value="get_tce_arg(get_tce(), 'map_redirect')">
+    </datalist>
+
+    <datalist id="imgs">
+        <option value="img/">
+        <option value="img/bens/meth_lab1.webp">
+        <option value="img/bens/meth_lab2.webp">
+        <option value="img/bens/meth_lab3.webp">
+        <option value="img/bens/outside.webp">
+        <option value="img/common/">
+        <option value="img/common/1_h_later.webp">
+        <option value="img/common/against_wall.webp">
+        <option value="img/common/against_wall_1.webp">
+        <option value="img/common/against_wall_2.webp">
+        <option value="img/common/against_wall_3.webp">
+        <option value="img/common/backstreet_bj.webp">
+        <option value="img/common/back_alley_night.webp">
+        <option value="img/common/bar.webp">
+        <option value="img/common/bar_night.webp">
+        <option value="img/common/beach1.webp">
+        <option value="img/common/beach2.webp">
+        <option value="img/common/beach_dune.webp">
+        <option value="img/common/beach_dusk.webp">
+        <option value="img/common/beach_hut.webp">
+        <option value="img/common/beach_hut_bbc.webp">
+        <option value="img/common/beach_hut_inside.webp">
+        <option value="img/common/beach_hut_inside2.webp">
+        <option value="img/common/beach_night.webp">
+        <option value="img/common/bus.webp">
+        <option value="img/common/bus_driver.webp">
+        <option value="img/common/bus_full.webp">
+        <option value="img/common/bus_night.webp">
+        <option value="img/common/bus_stop.webp">
+        <option value="img/common/bus_stop_night.webp">
+        <option value="img/common/cafe.webp">
+        <option value="img/common/cafe_inside.webp">
+        <option value="img/common/cafe_night.webp">
+        <option value="img/common/cafe_office.webp">
+        <option value="img/common/caffeteria.webp">
+        <option value="img/common/caffeteria2.webp">
+        <option value="img/common/caffeteria3.webp">
+        <option value="img/common/caffeteria4.webp">
+        <option value="img/common/city_day.webp">
+        <option value="img/common/city_dusk.webp">
+        <option value="img/common/city_morning.webp">
+        <option value="img/common/city_morning2.webp">
+        <option value="img/common/city_morning3.webp">
+        <option value="img/common/city_morning4.webp">
+        <option value="img/common/city_night_1.webp">
+        <option value="img/common/city_night_2.webp">
+        <option value="img/common/city_night_3.webp">
+        <option value="img/common/city_night_4.webp">
+        <option value="img/common/city_night_eddie.webp">
+        <option value="img/common/class.webp">
+        <option value="img/common/class2.webp">
+        <option value="img/common/club.webp">
+        <option value="img/common/club_inside.webp">
+        <option value="img/common/club_inside_empty.webp">
+        <option value="img/common/club_night.webp">
+        <option value="img/common/club_office.webp">
+        <option value="img/common/continue.webp">
+        <option value="img/common/corridor_1.webp">
+        <option value="img/common/dildo_ass.webp">
+        <option value="img/common/dildo_ass_night.webp">
+        <option value="img/common/dildo_pussy.webp">
+        <option value="img/common/dildo_pussy_night.webp">
+        <option value="img/common/dp_dark.webp">
+        <option value="img/common/empty_fridge.webp">
+        <option value="img/common/end.webp">
+        <option value="img/common/fast_food_inside.webp">
+        <option value="img/common/finger_pussy.webp">
+        <option value="img/common/finger_pussy_ass.webp">
+        <option value="img/common/finger_pussy_ass_night.webp">
+        <option value="img/common/finger_pussy_night.webp">
+        <option value="img/common/forest_1.webp">
+        <option value="img/common/forest_2.webp">
+        <option value="img/common/forest_3.webp">
+        <option value="img/common/forest_night.webp">
+        <option value="img/common/group_at_night.webp">
+        <option value="img/common/gym.webp">
+        <option value="img/common/gym_night.webp">
+        <option value="img/common/home.webp">
+        <option value="img/common/homework.webp">
+        <option value="img/common/home_afternoon.webp">
+        <option value="img/common/home_night.webp">
+        <option value="img/common/home_night_people.webp">
+        <option value="img/common/hooker_alley.webp">
+        <option value="img/common/jpn_bath.webp">
+        <option value="img/common/later.webp">
+        <option value="img/common/lecture.webp">
+        <option value="img/common/library.webp">
+        <option value="img/common/locker.webp">
+        <option value="img/common/locker2.webp">
+        <option value="img/common/mall1.webp">
+        <option value="img/common/mananger.webp">
+        <option value="img/common/nap.webp">
+        <option value="img/common/notice_board.webp">
+        <option value="img/common/notice_board2.webp">
+        <option value="img/common/nurse_office.webp">
+        <option value="img/common/office.webp">
+        <option value="img/common/park_water.webp">
+        <option value="img/common/pc_room.webp">
+        <option value="img/common/pc_room2.webp">
+        <option value="img/common/pc_room_bath.webp">
+        <option value="img/common/pc_room_kitchen.webp">
+        <option value="img/common/pc_room_window.webp">
+        <option value="img/common/pc_room_window_night.webp">
+        <option value="img/common/police_station.webp">
+        <option value="img/common/pool_1.webp">
+        <option value="img/common/pub.webp">
+        <option value="img/common/public_transport_crowd.webp">
+        <option value="img/common/pub_inside.webp">
+        <option value="img/common/pub_night.webp">
+        <option value="img/common/restaurante.webp">
+        <option value="img/common/riverside_1.webp">
+        <option value="img/common/roof.webp">
+        <option value="img/common/rural_1.webp">
+        <option value="img/common/rural_2.webp">
+        <option value="img/common/rural_3.webp">
+        <option value="img/common/rural_4.webp">
+        <option value="img/common/rural_5.webp">
+        <option value="img/common/rural_6.webp">
+        <option value="img/common/sauna.webp">
+        <option value="img/common/school_basket.webp">
+        <option value="img/common/school_basket_night.webp">
+        <option value="img/common/school_coridor.webp">
+        <option value="img/common/school_coridor2.webp">
+        <option value="img/common/school_coridor3.webp">
+        <option value="img/common/school_coridor_full.webp">
+        <option value="img/common/school_coridor_night.webp">
+        <option value="img/common/school_entry.webp">
+        <option value="img/common/school_entry2.webp">
+        <option value="img/common/school_entry2_afternoon.webp">
+        <option value="img/common/school_entry2_night.webp">
+        <option value="img/common/school_office.webp">
+        <option value="img/common/school_wc.webp">
+        <option value="img/common/shop_back.webp">
+        <option value="img/common/shop_changing.webp">
+        <option value="img/common/shop_clothes1.webp">
+        <option value="img/common/shop_clothes2.webp">
+        <option value="img/common/shop_clothes3.webp">
+        <option value="img/common/shop_exit.webp">
+        <option value="img/common/shop_general.webp">
+        <option value="img/common/shop_lingerie.webp">
+        <option value="img/common/shop_mart.webp">
+        <option value="img/common/shop_mart2.webp">
+        <option value="img/common/shop_sexshop.webp">
+        <option value="img/common/shop_sport.webp">
+        <option value="img/common/showers.webp">
+        <option value="img/common/showers2.webp">
+        <option value="img/common/sleep.webp">
+        <option value="img/common/slums.webp">
+        <option value="img/common/slums_night.webp">
+        <option value="img/common/slum_fuck.webp">
+        <option value="img/common/slum_fuck_blur.webp">
+        <option value="img/common/slum_wall.webp">
+        <option value="img/common/spa.webp">
+        <option value="img/common/spa_night.webp">
+        <option value="img/common/stairwell.webp">
+        <option value="img/common/stands.webp">
+        <option value="img/common/tattooo_place.webp">
+        <option value="img/common/track_n_field.webp">
+        <option value="img/common/vending_machine.webp">
+        <option value="img/common/wc_men.webp">
+        <option value="img/day_1/bath.webp">
+        <option value="img/day_1/bath2.webp">
+        <option value="img/day_1/continue1.webp">
+        <option value="img/day_1/continue2.webp">
+        <option value="img/day_1/cream.webp">
+        <option value="img/day_1/doc_pose.webp">
+        <option value="img/day_1/doc_pose_photo.webp">
+        <option value="img/day_1/examine.webp">
+        <option value="img/day_1/lib_desk.webp">
+        <option value="img/day_1/lib_peek.webp">
+        <option value="img/day_1/lib_pose.webp">
+        <option value="img/day_1/lib_pose2.webp">
+        <option value="img/day_1/lib_skirt.webp">
+        <option value="img/day_1/lib_study.webp">
+        <option value="img/day_1/lib_top.webp">
+        <option value="img/day_1/money.webp">
+        <option value="img/day_1/money2.webp">
+        <option value="img/day_1/skirt_1.webp">
+        <option value="img/day_1/skirt_2.webp">
+        <option value="img/day_1/strawbery.webp">
+        <option value="img/day_1/strip_1.webp">
+        <option value="img/day_1/strip_2.webp">
+        <option value="img/day_1/up_skirt_black.webp">
+        <option value="img/day_1/up_skirt_commando.webp">
+        <option value="img/day_1/up_skirt_pink.webp">
+        <option value="img/day_1/up_skirt_white.webp">
+        <option value="img/day_2/ben_bj.webp">
+        <option value="img/day_2/ben_bj_swallow.webp">
+        <option value="img/day_2/bus_grope1.webp">
+        <option value="img/day_2/bus_grope2.webp">
+        <option value="img/day_2/bus_grope3.webp">
+        <option value="img/day_2/corridor_towel.webp">
+        <option value="img/day_2/cum_drink.webp">
+        <option value="img/day_2/cum_glass.webp">
+        <option value="img/day_2/cum_pie.webp">
+        <option value="img/day_2/eat_cum_cake.webp">
+        <option value="img/day_2/hot_cum_dog.webp">
+        <option value="img/day_2/locker_1.webp">
+        <option value="img/day_2/locker_2.webp">
+        <option value="img/day_2/locker_3.webp">
+        <option value="img/day_2/locker_strip.webp">
+        <option value="img/day_2/nurse_office_b1.webp">
+        <option value="img/day_2/nurse_office_b2.webp">
+        <option value="img/day_2/nurse_office_b3.webp">
+        <option value="img/day_2/pe_shower.webp">
+        <option value="img/day_2/pe_shower2.webp">
+        <option value="img/day_2/pe_shower3.webp">
+        <option value="img/day_2/pe_shower4.webp">
+        <option value="img/day_2/track_n_field_fade.webp">
+        <option value="img/day_2/track_n_field_fade2.webp">
+        <option value="img/day_2/wet_by_window.webp">
+        <option value="img/day_1/">
+        <option value="img/day_2/">
+        <option value="img/day_3/">
+        <option value="img/day_4/">
+        <option value="img/day_3/dream.webp">
+        <option value="img/day_3/dream_blur.webp">
+        <option value="img/day_3/jeff_bj.webp">
+        <option value="img/day_3/jeff_pose.webp">
+        <option value="img/day_3/shower.webp">
+        <option value="img/day_3/wake_up.webp">
+        <option value="img/day_3/wc_boobs.webp">
+        <option value="img/day_3/wc_facial.webp">
+        <option value="img/day_4/anathomy_1.webp">
+        <option value="img/day_4/anathomy_2.webp">
+        <option value="img/day_4/anathomy_3.webp">
+        <option value="img/day_4/anathomy_4.webp">
+        <option value="img/day_4/anathomy_5.webp">
+        <option value="img/day_4/bus_expo.webp">
+        <option value="img/day_4/bus_expo_stop.webp">
+        <option value="img/day_4/bus_expo_stop_school.webp">
+        <option value="img/day_4/class_trip.webp">
+        <option value="img/day_4/panties_black.webp">
+        <option value="img/day_4/panties_down_black.webp">
+        <option value="img/day_4/panties_down_pink.webp">
+        <option value="img/day_4/panties_down_white.webp">
+        <option value="img/day_4/panties_pink.webp">
+        <option value="img/day_4/panties_pull_black.webp">
+        <option value="img/day_4/panties_pull_pink.webp">
+        <option value="img/day_4/panties_pull_white.webp">
+        <option value="img/day_4/panties_white.webp">
+        <option value="img/day_4/roof_boobs.webp">
+        <option value="img/day_4/roof_nude.webp">
+        <option value="img/day_4/under_desk_shy.webp">
+        <option value="img/day_4/under_desk_slut.webp">
+        <option value="img/day_7/anathomy_front.webp">
+        <option value="img/day_7/ben_call.webp">
+        <option value="img/day_7/city_day_drug.webp">
+        <option value="img/day_7/hooker_anal.webp">
+        <option value="img/day_7/hooker_anal_cum.webp">
+        <option value="img/day_7/hooker_anal_finger.webp">
+        <option value="img/day_7/hooker_bj.webp">
+        <option value="img/day_7/hooker_bj_cum.webp">
+        <option value="img/day_7/hooker_fck.webp">
+        <option value="img/day_7/hooker_fck_cum.webp">
+        <option value="img/day_7/slum_hookers.webp">
+        <option value="img/day_7/slum_hookers_schl.webp">
+        <option value="img/day_7/wet.webp">
+        <option value="img/day_7/wet_blur.webp">
+        <option value="img/panorama/">
+        <option value="img/panorama/city_blocks_01.webp">
+        <option value="img/panorama/fountain.webp">
+        <option value="img/prologue/">
+        <option value="img/prologue/bus_phone.webp">
+        <option value="img/prologue/cheap_thugs.webp">
+        <option value="img/prologue/cop_at_door.webp">
+        <option value="img/prologue/crime_scene.webp">
+        <option value="img/prologue/cumshot_1.webp">
+        <option value="img/prologue/cumshot_2.webp">
+        <option value="img/prologue/cum_in_shower.webp">
+        <option value="img/prologue/diner.webp">
+        <option value="img/prologue/disco.webp">
+        <option value="img/prologue/gambling.webp">
+        <option value="img/prologue/gambling2.webp">
+        <option value="img/prologue/gambling_dead.webp">
+        <option value="img/prologue/gift_card200.webp">
+        <option value="img/prologue/guy_in_shower.webp">
+        <option value="img/prologue/hooker.webp">
+        <option value="img/prologue/lecture_torn_skirt.webp">
+        <option value="img/prologue/locker_finger.webp">
+        <option value="img/prologue/old_home1.webp">
+        <option value="img/prologue/old_home2.webp">
+        <option value="img/prologue/phone.webp">
+        <option value="img/prologue/phone_foot.webp">
+        <option value="img/prologue/phone_selfie_1.webp">
+        <option value="img/prologue/phone_selfie_2.webp">
+        <option value="img/prologue/phone_shool_foot.webp">
+        <option value="img/prologue/phone_shool_selfie_1.webp">
+        <option value="img/prologue/phone_shool_selfie_2.webp">
+        <option value="img/prologue/school_feet_1.webp">
+        <option value="img/prologue/school_feet_2.webp">
+        <option value="img/prologue/school_feet_3.webp">
+        <option value="img/prologue/selfie1.webp">
+        <option value="img/prologue/selfie_2.webp">
+        <option value="img/prologue/selfie_foot.webp">
+        <option value="img/prologue/shower.webp">
+        <option value="img/prologue/shower_touch.webp">
+        <option value="img/prologue/shower_wet.webp">
+        <option value="img/prologue/sms.webp">
+        <option value="img/prologue/thug.webp">
+        <option value="img/prologue/wc_bj_01.webp">
+        <option value="img/prologue/wc_bj_02.webp">
+        <option value="img/prologue/wc_bj_03.webp">
+        <option value="img/prologue/witness_1.webp">
+        <option value="img/prologue/witness_2.webp">
+        <option value="img/prologue/witness_3.webp">
+        <option value="img/prologue/witness_4.webp">
+        <option value="img/cafe/">
+        <option value="img/cafe/face_1.webp">
+        <option value="img/cafe/face_2.webp">
+        <option value="img/cafe/kneeling_maid.webp">
+        <option value="img/cafe/old_fashioned.webp">
+        <option value="img/beach/">
+        <option value="img/spa/">
+        <option value="img/beach/blowjob.webp">
+        <option value="img/beach/handjob.webp">
+        <option value="img/beach/hut_pose_1.webp">
+        <option value="img/beach/hut_pose_2.webp">
+        <option value="img/beach/pose_1.webp">
+        <option value="img/beach/pose_2.webp">
+        <option value="img/beach/pose_3.webp">
+        <option value="img/beach/pose_4.webp">
+        <option value="img/beach/rocks_1.webp">
+        <option value="img/beach/rocks_2.webp">
+        <option value="img/beach/rocks_3.webp">
+        <option value="img/beach/sea.webp">
+        <option value="img/beach/sea2.webp">
+        <option value="img/beach/swim.webp">
+        <option value="img/beach/swim_nude.webp">
+        <option value="img/spa/bj.webp">
+        <option value="img/spa/corridor_day.webp">
+        <option value="img/spa/corridor_night.webp">
+        <option value="img/spa/massage_0.webp">
+        <option value="img/spa/massage_1.webp">
+        <option value="img/spa/massage_2.webp">
+        <option value="img/spa/massage_3.webp">
+        <option value="img/spa/massage_4.webp">
+        <option value="img/spa/spa_entry.webp">
+        <option value="img/spa/spa_room.webp">
+        <option value="img/spa/spring.webp">
+        <option value="img/spa/spring2.webp">
+        <option value="img/spa/spring2_night.webp">
+        <option value="img/spa/spring_back.webp">
+        <option value="img/spa/spring_dip.webp">
+        <option value="img/spa/spring_front.webp">
+        <option value="img/spa/spring_full.webp">
+        <option value="img/spa/spring_night.webp">
+        <option value="img/spa/spring_night_full.webp">
+        <option value="img/spa/spring_shy.webp">
+        <option value="img/studio/inside_tent.webp">
+        <option value="img/studio/models.webp">
+        <option value="img/studio/models_paint.webp">
+        <option value="img/studio/models_wet.webp">
+        <option value="img/studio/street_fair.webp">
+        <option value="img/studio/street_fair_rain.webp">
+        <option value="img/studio/street_fair_tents_rain.webp">
+        <option value="img/studio/studio.webp">
+        <option value="img/park/fuk_showt.webp">
+        <option value="img/park/fuk_show_night.webp">
+        <option value="img/park/mc_doggo_fuk.webp">
+        <option value="img/park/mc_doggo_fuk_night.webp">
+        <option value="img/park/meadow.webp">
+        <option value="img/weekend/kiss.webp">
+        <option value="img/weekend/train_in_1.webp">
+        <option value="img/weekend/train_in_2.webp">
+        <option value="img/weekend/train_out_1.webp">
+        <option value="img/weekend/train_out_2.webp">
+        <option value="img/weekend/zuza.webp">
+        <option value="img/lenard_date/anal_outdoor.webp">
+        <option value="img/lenard_date/anal_outdoor_dark.webp">
+        <option value="img/lenard_date/anal_outdoor_sunset.webp">
+        <option value="img/lenard_date/bed_cumshot.webp">
+        <option value="img/lenard_date/bed_pose_1.webp">
+        <option value="img/lenard_date/bed_pose_2.webp">
+        <option value="img/lenard_date/bed_pose_3.webp">
+        <option value="img/lenard_date/bj.webp">
+        <option value="img/lenard_date/bj_cum.webp">
+        <option value="img/lenard_date/sex_in_bed.webp">
+        <option value="img/shop_events/dildo_lick.webp">
+        <option value="img/shop_events/dildo_lick2.webp">
+        <option value="img/shop_events/dildo_pussy1.webp">
+        <option value="img/shop_events/dildo_pussy2.webp">
+        <option value="img/shop_events/mall_back_corridor.webp">
+        <option value="img/shop_events/photo_set.webp">
+        <option value="img/shop_events/sexshop_dildo.webp">
+        <option value="img/shop_events/janitor_bj.webp">
+        <option value="img/school_events/basement_anal.webp">
+        <option value="img/school_events/basement_anal_cum.webp">
+        <option value="img/school_events/classroom_bj.webp">
+        <option value="img/school_events/classroom_bj_cum.webp">
+        <option value="img/school_events/classroom_bj_x2.webp">
+        <option value="img/school_events/classroom_bj_x2_cum.webp">
+        <option value="img/school_events/classroom_dp.webp">
+        <option value="img/school_events/classroom_dp_cum.webp">
+        <option value="img/school_events/classroom_fuck.webp">
+        <option value="img/school_events/cumshot.webp">
+        <option value="img/school_events/dick_in_face.webp">
+        <option value="img/school_events/dick_in_face_cum.webp">
+        <option value="img/school_events/door_peek.webp">
+        <option value="img/school_events/eat_cum.webp">
+        <option value="img/school_events/gh_bbc.webp">
+        <option value="img/school_events/gh_bbcock.webp">
+        <option value="img/school_events/gh_bbc_cum.webp">
+        <option value="img/school_events/gh_wc.webp">
+        <option value="img/school_events/hm_anal.webp">
+        <option value="img/school_events/hm_anal_hit.webp">
+        <option value="img/school_events/hm_ass_up.webp">
+        <option value="img/school_events/hm_ass_up_plug1.webp">
+        <option value="img/school_events/hm_ass_up_plug2.webp">
+        <option value="img/school_events/hm_ass_up_plug_cum.webp">
+        <option value="img/school_events/hm_ass_up_ready.webp">
+        <option value="img/school_events/hm_fist.webp">
+        <option value="img/school_events/masturbate.webp">
+        <option value="img/school_events/peek_hole.webp">
+        <option value="img/school_events/plug_masturbate.webp">
+        <option value="img/school_events/shower_peek.webp">
+        <option value="img/school_events/shower_solo1.webp">
+        <option value="img/school_events/shower_solo2.webp">
+    </datalist>
+    <datalist id="npcs">
+        <option value="img/npc/barkeep.png">
+        <option value="img/npc/bb.png">
+        <option value="img/npc/bb_casual.png">
+        <option value="img/npc/ben.png">
+        <option value="img/npc/ben_b.png">
+        <option value="img/npc/boss_girl.png">
+        <option value="img/npc/bouncer.png">
+        <option value="img/npc/bum1.png">
+        <option value="img/npc/butler.png">
+        <option value="img/npc/chad.png">
+        <option value="img/npc/chemist.png">
+        <option value="img/npc/cop.png">
+        <option value="img/npc/cris.png">
+        <option value="img/npc/delivery_guy.png">
+        <option value="img/npc/fat_mom.png">
+        <option value="img/npc/fisher.png">
+        <option value="img/npc/fisher_a.png">
+        <option value="img/npc/generic_student.png">
+        <option value="img/npc/generic_student2.png">
+        <option value="img/npc/generic_student3.png">
+        <option value="img/npc/generic_student4.png">
+        <option value="img/npc/generic_student_fem.png">
+        <option value="img/npc/generic_student_fem2.png">
+        <option value="img/npc/head.png">
+        <option value="img/npc/hooker1.png">
+        <option value="img/npc/hooker2.png">
+        <option value="img/npc/hostess.png">
+        <option value="img/npc/houghton.png">
+        <option value="img/npc/jack.png">
+        <option value="img/npc/janitor.png">
+        <option value="img/npc/jeff.png">
+        <option value="img/npc/karen.png">
+        <option value="img/npc/kido.png">
+        <option value="img/npc/kido_b.png">
+        <option value="img/npc/laura.png">
+        <option value="img/npc/lenard.png">
+        <option value="img/npc/lifeguard.png">
+        <option value="img/npc/mac.png">
+        <option value="img/npc/maid.png">
+        <option value="img/npc/maid2.png">
+        <option value="img/npc/maid3.png">
+        <option value="img/npc/mc_boss.png">
+        <option value="img/npc/miss_kitty.png">
+        <option value="img/npc/nerd.png">
+        <option value="img/npc/nerd_smoke.png">
+        <option value="img/npc/none.png">
+        <option value="img/npc/npc_1.png">
+        <option value="img/npc/npc_2.png">
+        <option value="img/npc/npc_3.png">
+        <option value="img/npc/npc_4.png">
+        <option value="img/npc/npc_5.png">
+        <option value="img/npc/npc_6.png">
+        <option value="img/npc/npc_7.png">
+        <option value="img/npc/nude_adam.png">
+        <option value="img/npc/nude_anna.png">
+        <option value="img/npc/nude_anna_base.png">
+        <option value="img/npc/nude_daniel.png">
+        <option value="img/npc/nude_emma.png">
+        <option value="img/npc/nude_joe.png">
+        <option value="img/npc/nude_sarah.png">
+        <option value="img/npc/nurse_hank.png">
+        <option value="img/npc/punk_f.png">
+        <option value="img/npc/pupper.png">
+        <option value="img/npc/rent_a_cop.png">
+        <option value="img/npc/sarge.png">
+        <option value="img/npc/sarge_nude.png">
+        <option value="img/npc/sarge_nude_omega.png">
+        <option value="img/npc/sergei.png">
+        <option value="img/npc/spa_girl.png">
+        <option value="img/npc/spa_girl_nude.png">
+        <option value="img/npc/student_shirtless.png">
+        <option value="img/npc/thug1.png">
+        <option value="img/npc/tom.png">
+        <option value="img/npc/zuza.png">
+        <option value="img/npc/zuza_angry_nude.png">
+        <option value="img/npc/zuza_nude.png">
+        <option value="img/npc/zuza_nude_wet.png">
+    </datalist>
+    <datalist id="cmds">
+        <option value="update_current_clothes_list()">
+        <option value="restore_clothes()">
+        <option value="count_clothes_by_tag(tag, eqquiped_only=False)">
+        <option value="has_clothes_by_tag(tag, eqquiped_only=False)">
+        <option value="set_quest('q_name', '')">
+        <option value="show_error(txt, do_clear=False)">
+        <option value="random()">
+        <option value="randint(start, stop=None)">
+        <option value="random_choice(input_list, weights=None)">
+        <option value="random_choice_adv(name, weights, static_weights_bonus=None)">
+        <option value="chance(p)">
+        <option value="d(sides, num=1)">
+        <option value="open_url(url, new_tab=True)">
+        <option value="get_weekday()">
+        <option value="is_weekend()">
+        <option value="get_datetime()">
+        <option value="is_time_of_day(*time_of_day_list)">
+        <option value="is_day()">
+        <option value="get_day()">
+        <option value="get_time_of_day()">
+        <option value="get_day_name(future_day=0)">
+        <option value="get_time_of_day_name()">
+        <option value="set_time_of_day(time_of_day)">
+        <option value="progress_time(1)">
+        <option value="exec_once('progress_time(1)')">
+        <option value="give_clothes_by_tag(tag)">
+        <option value="strip_nude()">
+        <option value="set_clothes(clothes_list)">
+        <option value="change_clothes(tag_set=None, enforce_stats=1)">
+        <option value="shop(shop_id=None, tag_set=None, enforce_stats=1, buyback=False)">
+        <option value="is_exposed(test_expo, logic='any')">
+        <option value="get_exposure()">
+        <option value="set_bodypart_img(bodypart, img_path)">
+        <option value="overlay_img(img_url=None, img_class='overlay_blend_screen', clear=True)">
+        <option value="exec_once(cmd)">
+        <option value="exec_once('save.slut+=1')">
+        <option value="save.get_list(list_name)">
+        <option value="save.del_from_list(list_name, value)">
+        <option value="splash(rgba=(255,230,241,0.8), mode='screen', backdrop_filter='none', anim='fade_out')">
+        <option value="splash((240, 240, 250, 1.0), time=700)">
+        <option value="splash([190,90,90,0.5], 'normal', time=450)">
+        <option value="svg_filter(filter_name='default')">
+        <option value="svg_filter('default')">
+        <option value="svg_filter('night')">
+        <option value="parallax_imgs(img_list=None, scroll_dir='y')">
+        <option value="init_new_save()">
+        <option value="restore_last()">
+        <option value="move_to(target)">
+        <option value="show_map(poi_list=None, show_known=True)">
+        <option value="show_map()">
+        <option value="remove_map_event(target, from_poi=None, target_poi=None)">
+        <option value="set_map_event(target, from_poi=None, target_poi=None)">
+        <option value="play_music(url=None)">
+        <option value="inventory.">
+        <option value="inventory.clear()">
+        <option value="save.">
+        <option value="save.money">
+        <option value="save.max_slut">
+        <option value="save.explore_list">
+        <option value="save.rep_peeking_tom">
+        <option value="save.rep_lenard">
+        <option value="save.has_giftcard">
+        <option value="save.slut">
+        <option value="save.cum_love">
+        <option value="save.has_photo">
+        <option value="save.has_foot_photo">
+        <option value="save.has_selfie">
+        <option value="save.has_nude_selfie">
+        <option value="save.rep_ben">
+        <option value="save.rep_school">
+        <option value="save.ben_has_nr">
+        <option value="save.ben_has_pin">
+        <option value="save.ben_has_selfie">
+        <option value="save.ben_has_nudie">
+        <option value="save.ben_has_foot_photo">
+        <option value="save.day0_legwear">
+        <option value="add_poi('')">
+        <option value="set_time_of_day(TIME.NIGHT)">
+        <option value="set_time_of_day(TIME.MORNING)">
+        <option value="set_time_of_day(TIME.NOON)">
+        <option value="set_time_of_day(TIME.MIDDAY)">
+        <option value="set_time_of_day(TIME.AFTERNOON)">
+        <option value="set_time_of_day(TIME.EVENING)">
+        <option value="progress_time(amount=1)">
+        <option value="music('blank')">
+        <option value="music('chill')">
+        <option value="music('chill_guitar')">
+        <option value="music('cool')">
+        <option value="music('day')">
+        <option value="music('funky')">
+        <option value="music('lazy')">
+        <option value="music('levelup')">
+        <option value="music('like_the_synth')">
+        <option value="music('lobby')">
+        <option value="music('chipper_doodle')">
+        <option value="music('sad')">
+        <option value="music('sexytime')">
+        <option value="music('swamp')">
+        <option value="music('tbc')">
+        <option value="music('roundabout')">
+        <option value="music('lilac')">
+        <option value="music('vampire')">
+        <option value="music('disco')">
+        <option value="music('oh_my')">
+        <option value="music('know_myself')">
+        <option value="music('dorris_day')">
+        <option value="music('record_scratch')">
+        <option value="counter_inc('name')">
+        <option value="counter_get('name')">
+        <option value="set_bodypart_img('pc_img_nude','img/pc/...')">
+    </datalist>
+
+    <script type="text/python">
+    from browser import bind, html
+    from browser import window as data
+    from browser import document as doc
+
+    from javascript import JSON
+    from javascript import Date
+    from javascript import RegExp
+    from javascript import String
+
+    input_names = ('node_name','next', 'pc', 'txt', 'img', 'npc', 'eval_jump_to')
+    input_divs = ('choice_div', 'branch_div', 'cmd_div')
+
+    def clear_all():
+        doc['bug_comment'].value = ''
+        doc['save_data'].value = ''
+        for element_id in input_names:
+            doc[element_id].value = ''
+            doc['bug_'+element_id].value = ''
+            doc['bug_'+element_id].classList.remove('different')
+
+        for element_id in input_divs:
+            doc[element_id].clear()
+            doc['bug_'+element_id].clear()
+
+    def check_for_diff():
+        for element_id in input_names:
+            if element_id in doc and 'bug_'+element_id in doc:
+                if doc[element_id].value != doc['bug_'+element_id].value:
+                    doc['bug_'+element_id].classList.add('different')
+
+            i=0
+            while 'bug_choice_condition_'+str(i) in doc:
+                if 'choice_condition_'+str(i) in doc:
+                    if doc['bug_choice_condition_'+str(i)].value != doc['choice_condition_'+str(i)].value:
+                        doc['bug_choice_condition_'+str(i)].classList.add('different')
+                if 'choice_label_'+str(i) in doc:
+                    if doc['bug_choice_label_'+str(i)].value != doc['choice_label_'+str(i)].value:
+                        doc['bug_choice_label_'+str(i)].classList.add('different')
+                if 'choice_target_'+str(i) in doc:
+                    if doc['bug_choice_target_'+str(i)].value != doc['choice_target_'+str(i)].value:
+                        doc['bug_choice_target_'+str(i)].classList.add('different')
+                i+=1
+
+            i=0
+            while 'bug_branch_condition_'+str(i) in doc:
+                if 'branch_condition_'+str(i) in doc:
+                    if doc['bug_branch_condition_'+str(i)].value != doc['branch_condition_'+str(i)].value:
+                        doc['bug_branch_condition_'+str(i)].classList.add('different')
+                if 'branch_target_'+str(i) in doc:
+                    if doc['bug_branch_target_'+str(i)].value != doc['branch_target_'+str(i)].value:
+                        doc['bug_branch_target_'+str(i)].classList.add('different')
+                i+=1
+            i=0
+            while 'bug_cmd_'+str(i) in doc:
+                if 'cmd_'+str(i) in doc:
+                    if doc['bug_cmd_'+str(i)].value != doc['cmd_'+str(i)].value:
+                        doc['bug_cmd_'+str(i)].classList.add('different')
+                i+=1
+
+    def make_choices_from_bug(data):
+        i=0
+        for row in data.splitlines():
+            if row:
+                row_as_list = []
+                try:
+                    row_as_list = eval(row)
+                except Exception as e:
+                    print('Could not read row: '+str(e))
+                if row_as_list:
+                    choice_condition, choice_label, choice_target = row_as_list
+                    doc['bug_choice_div'] <= 'if '
+                    doc['bug_choice_div'] <= html.INPUT(value=choice_condition, type="text", id="bug_choice_condition_"+str(i), size="25")
+                    doc['bug_choice_div'] <= 'txt: '
+                    doc['bug_choice_div'] <= html.INPUT(value=choice_label, type="text", id="bug_choice_label_"+str(i), size="20")
+                    doc['bug_choice_div'] <= '> '
+                    doc['bug_choice_div'] <= html.INPUT(value=choice_target, type="text", id="bug_choice_target_"+str(i), size="15", list="nodes")
+                    doc['bug_choice_div'] <= html.BR()
+                    i+=1 #only increment for valid rows
+
+    def make_branches_from_bug(data):
+        i=0
+        for row in data.splitlines():
+            if row:
+                row_as_list = []
+                try:
+                    row_as_list = eval(row)
+                except Exception as e:
+                    print('Could not read row: '+str(e))
+                if row_as_list:
+                    branch_condition, branch_target = row_as_list
+                    doc['bug_branch_div'] <= 'if '
+                    doc['bug_branch_div'] <= html.INPUT(value=branch_condition, type="text", id="bug_branch_condition_"+str(i), size="25")
+                    doc['bug_branch_div'] <= '> '
+                    doc['bug_branch_div'] <= html.INPUT(value=branch_target, type="text", id="bug_branch_target_"+str(i), size="15", list="nodes")
+                    doc['bug_branch_div'] <= html.BR()
+                    i+=1 #only increment for valid rows
+
+    def make_cmds_from_bug(data):
+        i=0
+        for cmd in data.splitlines():
+            if cmd:
+                doc['bug_cmd_div'] <= html.INPUT(value=cmd, type="text", id="bug_cmd_"+str(i), list="cmds", size="60")
+                doc['bug_cmd_div'] <= html.BR()
+                i+=1 #only increment for valid rows
+
+    @bind(doc['load_bug'], 'input')
+    def on_bug_report_load(event=None):
+        def _on_load(event):
+            json_data = event.target.result
+            try:
+                loaded_dict = JSON.parse(json_data)
+                #update the fields...
+                doc['bug_comment'].value = loaded_dict['bug_rep_comment']
+                doc['save_data'].value = loaded_dict['save']
+                doc['bug_node_name'].value = loaded_dict['bug_rep_name']
+                doc['bug_next'].value = loaded_dict['bug_rep_next']
+                doc['bug_pc'].value = loaded_dict['bug_rep_pc']
+                doc['bug_txt'].value = loaded_dict['bug_rep_txt']
+                doc['bug_img'].value = loaded_dict['bug_rep_img']
+                doc['bug_npc'].value = loaded_dict['bug_rep_npc']
+                doc['bug_eval_jump_to'].value = loaded_dict['bug_rep_jump']
+                make_choices_from_bug(loaded_dict['bug_rep_choice'])
+                make_branches_from_bug(loaded_dict['bug_rep_branch'])
+                make_cmds_from_bug(loaded_dict['bug_rep_cmd'])
+                # update the fields from the plot.txt...
+                node_id = loaded_dict['bug_rep_name']
+                if node_id in data.plot:
+                    doc['node_name'].value = node_id
+
+                    for n in ('next', 'pc', 'txt', 'img', 'npc', 'eval_jump_to'):
+                        if n in data.plot[node_id]:
+                            doc[n].value = data.plot[node_id][n]
+                        else:
+                            doc[n].value = ''
+                    if 'branch' in data.plot[node_id]:
+                        i=0
+                        for branch_condition, branch_target in data.plot[node_id]['branch']:
+                            doc['branch_div'] <= 'if '
+                            doc['branch_div'] <= html.INPUT(value=branch_condition, type="text", id="branch_condition_"+str(i), size="25")
+                            doc['branch_div'] <= '> '
+                            doc['branch_div'] <= html.INPUT(value=branch_target, type="text", id="branch_target_"+str(i), size="15", list="nodes")
+                            doc['branch_div'] <= html.BR()
+                            i+=1
+
+                    if 'choice' in data.plot[node_id]:
+                        i=0
+                        for choice_condition, choice_label, choice_target in data.plot[node_id]['choice']:
+                            doc['choice_div'] <= 'if '
+                            doc['choice_div'] <= html.INPUT(value=choice_condition, type="text", id="choice_condition_"+str(i), size="25")
+                            doc['choice_div'] <= 'txt: '
+                            doc['choice_div'] <= html.INPUT(value=choice_label, type="text", id="choice_label_"+str(i), size="20")
+                            doc['choice_div'] <= '> '
+                            doc['choice_div'] <= html.INPUT(value=choice_target, type="text", id="choice_target_"+str(i), size="15", list="nodes")
+                            doc['choice_div'] <= html.BR()
+                            i+=1
+                    if 'cmd' in data.plot[node_id]:
+                        for i, cmd in enumerate(data.plot[node_id]['cmd']):
+                            doc['cmd_div'] <= html.INPUT(value=cmd, type="text", id="cmd_"+str(i), list="cmds", size="60")
+                            doc['cmd_div'] <= html.BR()
+
+                    check_for_diff()
+
+            except Exception as e:
+                print(f'Error: Could not load data from file! {e}')
+
+        clear_all()
+        mod_file = doc['load_bug'].files[0]
+        # window is data
+        reader = data.FileReader.new()
+        reader.readAsText(mod_file)
+        reader.bind('load', _on_load)
+
+
+    @bind(doc['write_plot'], 'mousedown')
+    def _save_to_file(event=None):
+        # update the plot...
+        node_id = doc['bug_node_name'].value
+        for n in ('next', 'pc', 'txt', 'img', 'npc', 'eval_jump_to'):
+            if doc['bug_'+n].value:
+                data.plot[node_id][n] = doc['bug_'+n].value
+
+        if 'bug_choice_condition_0' in doc:
+            data.plot[node_id]['choice'] = []
+            i=0
+            while 'bug_choice_condition_'+str(i) in doc:
+                data.plot[node_id]['choice'].append([ doc['bug_choice_condition_'+str(i)].value,
+                                                      doc['bug_choice_label_'+str(i)].value,
+                                                      doc['bug_choice_target_'+str(i)].value,])
+                i+=1
+
+        if 'bug_branch_condition_0' in doc:
+            data.plot[node_id]['branch'] = []
+            i=0
+            while 'bug_branch_condition_'+str(i) in doc:
+                data.plot[node_id]['branch'].append([ doc['bug_branch_condition_'+str(i)].value,
+                                                      doc['bug_branch_condition_'+str(i)].value])
+                i+=1
+
+        if 'bug_cmd_0' in doc:
+            data.plot[node_id]['cmd'] = []
+            i=0
+            while 'bug_cmd_'+str(i) in doc:
+                data.plot[node_id]['cmd'].append(doc['bug_cmd_'+str(i)].value)
+                i+=1
+
+        date = Date.new()
+        year = date.getFullYear()
+        out_string = '// Copyright '+str(year)
+        out_string += ' Shark in a Hat. All Rights Reserved.%0D%0A'
+        out_string += 'var notes = '+JSON.stringify(data.notes)+';%0D%0A'
+        out_string += 'var plot='
+
+        #remove all the __hashvalue__ bloat
+        # this is slower, but the end file is much smaller
+        re = RegExp.new(r',"__hashvalue__":+\d+', 'g')
+        out_string+= String.new(JSON.stringify(data.plot)).replaceAll(re, '')
+
+        #out_string += JSON.stringify(data.plot)
+        out_string +=' ;%0D%0A'
+        doc["write_plot"].href = "data:text/plain," + out_string
+
+
+    </script>
+</body>
+</html>
+

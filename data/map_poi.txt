@@ -1,0 +1,32 @@
+// Copyright 2021 Shark in a Hat. All Rights Reserved.
+//  ['label',              icon',  'target',          'name',           x,    y ]
+//id:0                     1       2                  3                 4     5
+var poi = [
+    ['Explore the City ', 'f4d7',  'map_explore',     'explore',        1245,  88],
+    ['Shopping Mall',     'f07a',  'map_shops',       'shops',          270,  360],
+    ['Home',              'f015',  'map_home',        'home',           69,   400],
+    ['School',            'f19d',  'map_school',      'school',         70,   620],
+    ['Old Town',          'f66f',  'map_old_town',    'old_town',       267,  227],
+    ['East Park',         'f1bb',  'map_east_park',   'east_park',      1120, 525],
+    ['Riverside Park',    'f3c5',  'map_river_park',  'park_river',     650,  620],
+    ['Public Beach',      'f5ca',  'map_beach',       'beach',          1085, 290],
+    ['Hidden Beach',      'f3c5',  'map_nude_beach',  'nude_beach',     1145, 345],
+    ['Coffee Bar',        'f0f4',  'map_cafe',        'cafe',           140,  530],
+    ['Night Club',        'f561',  'map_club',        'club',           360,  640],
+    ['Pub',               'f0fc',  'map_pub',         'pub',            520,  490],
+    ['Restaurant',        'f818',  'map_pizza',       'pizza',          605,  380],
+    ["Marco's ",          'f1ad',  'map_marco',       'marco',          980,  640],
+    ['Spa ',              'f5bb',  'map_spa',         'spa',            880,  440],
+    ['Docks',             'f21a',  'map_docks',       'docks',          760,  100],
+    ['Slums',             'f64f',  'map_slums',       'slums',          574,  140],
+    ['Apartment ',        'f015',  'map_new_home',    'new_home',       830,  230],
+    ['Studio ',           'f03d',  'map_photo',       'studio',         872,  532],
+    ['Gym ',              'f44b',  'map_gym',         'gym',            1150, 455],
+    ['The Island ',       'f54c',  'map_island',      'island',         1190, 188],
+    ['Bar ',              'f805',  'map_bar',         'bar',            355,  520],
+    ['School',            'f19d',  'map_school_d0',   'school_d0',      70,   620],
+    ['Home',              'f015',  'map_home_d0',     'home_d0',        69,   400],
+    ['School',            'f19d',  'map_school_d1',   'school_d1',      70,   620],
+    ['Apartment ',        'f015',  'd15_new_home',    'd15_new_home',   830,  230],
+    ['Film Set ',         ' f004', 'map_porn',        'porn',           420,  286],
+]

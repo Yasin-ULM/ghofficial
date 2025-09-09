@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!-- '''Plotato Engine license:
+        Copyright 2021-2023 Shark in a Hat (shark_in_a_hat@protonmail.com)
+        Supported by: Matt, CodE, hinaberg, jehefuco, KryperCreeping,
+                  cuckold_yyc, GABRIEL ALFORD, Reld, MrSuicide,
+                  Naurd, Mathieu Gouillart, BettyPage, Maximus,
+                  Theo_Malt, Alex, Foxy'sFan, Dov D Bush, Overseer,
+                  Franatique, mahena, An Anonymous Benefactor, Joe Steel,
+                  David Kindler, bsnick, BranVan, Jayjay Fan, lea,
+                  helena ho, coni, evilbiscuit, Iroquois Pliskin, Ab,
+                  Drunkmilkman, bouncy4u
+
+        Permission to use, copy, modify, and/or distribute this software
+        for any purpose with or without fee is hereby granted, provided
+        that the above copyright notice and this permission notice
+        appear in all copies.
+
+        THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
+        WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
+        WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
+        THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR
+        CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+        LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+        NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+        CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+    ''' -->
+    <script type="text/javascript" src="../brython/brython.js"></script>
+    <script type="text/javascript" src="../brython/brython_modules.js"></script>
+    <script type="text/javascript" src="../data/mods.txt"></script>
+
+    <!-- "Icon, favicon, or shortcut icon, whatever works." -->
+    <link rel="shortcut icon" type="image/ico" href="../img/potato.ico">
+    <link rel="icon" type="image/ico" href="../img/potato.ico">
+
+    <title>Mod Manager</title>
+    <style type="text/css">
+        *{
+            line-height: 1.4;
+            font-size: 20px;
+            font-family: monospace, monospace;
+        }
+        body{
+            background-color: rgb(90,90,90);
+            color:  white;
+            text-shadow: 1px 1px 1px black;
+        }
+
+        textarea{
+            line-height: 1.0;
+            font-size: 14px;
+        }
+        input{
+            line-height: 1.0;
+            background: rgb(220, 220, 230);
+            margin: 2px;
+        }
+        input[type=checkbox] {
+            transform: scale(2.5);
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .button{
+            font-size: 100%;
+            text-shadow: none;
+            color: black;
+            background: rgb(210, 210, 230);
+            padding: 2px 8px;
+            margin: 2px 2px;
+            border: 1px solid gray;
+            border-radius: 2px;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        .button:hover{
+            border: 1px solid blue;
+        }
+        .mod_label{
+        }
+
+        .mod_label:hover::after{
+            content: attr(data-hint);
+            font-family: monospace, monospace;
+            text-shadow: none;
+            font-size: 80%;
+            border-radius: 4px;
+            border-style: solid;
+            border-width: 1px;
+            padding: 3px 4px;
+            background: rgba(255, 255, 255, 0.9);
+            white-space: pre;
+            color: black;
+            position: absolute;
+            transform: translate(0, -45px);
+        }
+
+    </style>
+</head>
+<body onload="brython( {debug:0, indexedDB:0} )">
+    <h1>Plotato Mod Manager (experimental)</h1>
+    <details>
+    <summary>
+        Instructions (click to expand)
+    </summary>
+        <div> WARRNING: Mods can break the game, corrupt autosaves and redirect to malicious internet sites!</div><br>
+        <div> Use the button labled 'import mod from' to load a new mod or update an existing mod.</div>
+        <div> Loaded mods appear on the list below. Tick the box next to the mod name to activate it</div>
+        <div> Use the arrow buttons to change the load order. Mods are loaded from top to bottom.</div>
+        <div> Use the 'remove' button to delete a mod from the list.</div>
+        <div> Click 'enable selected mods' to enable the selected mods, this action will generate a new file and ask you to save it. For the mods to load properly this file needs to be named 'mods.txt' and placed in the data directory (../data/mods.txt)</div>
+    </details>
+    <hr>
+    Import mod from:
+    <label class="button">
+        <input type="file" id="import_mod" name="import_mod">SELECT FILE...
+    </label>
+    <hr>
+    <a class="button" id="write_master_mod" href="#" download="mods.txt" >Enable Selected Mods</a>
+    <hr>
+    <h2>Mods list:</h2>
+    <div id='mod_list'></div>
+
+    <script type="text/python">
+    from browser import bind, html
+    from browser import window as data
+    from browser import document as doc
+
+
+    loadorder = list(data.loadorder)
+    mods = dict(data.mods)
+    mods_desc = dict(data.mods_desc)
+    active_mods = list(data.active_mods)
+
+    def get_mod_desc(mod_name):
+        if mod_name in mods_desc:
+            return mods_desc[mod_name]
+        else:
+            return 'Mod has no description.'
+
+    def draw_mod_list(keep_active=False):
+        if not keep_active:
+            active_mods.clear()
+            for checkbox in doc.get(selector='input[type="checkbox"]'):
+                itm_id = checkbox.value
+                if checkbox.checked:
+                    active_mods.append(checkbox.value)
+
+        doc['mod_list'].clear()
+        for mod_name in loadorder:
+            mod_div = html.DIV(id=mod_name)
+            if mod_name in active_mods:
+                mod_div <= html.INPUT(type="checkbox", value=mod_name, id='checkbox_'+mod_name, checked=True)
+            else:
+                mod_div <= html.INPUT(type="checkbox", value=mod_name, id='checkbox_'+mod_name)
+            mod_div <= html.LABEL(" "+mod_name,
+                                  For='checkbox_'+mod_name,
+                                  data_hint = get_mod_desc(mod_name),
+                                  Class='mod_label')
+
+            b_up = html.BUTTON("&uarr;", type="button", Class="button")
+            b_up.bind('click', move_mod_up)
+
+            b_down = html.BUTTON("&darr;", type="button", Class="button")
+            b_down.bind('click', move_mod_down)
+
+            b_del = html.BUTTON("REMOVE", type="button", Class="button")
+            b_del.bind('click', del_mod)
+
+            mod_div <= b_up
+            mod_div <= b_down
+            mod_div <= b_del
+
+            doc['mod_list'] <= mod_div
+            doc['mod_list'] <= html.HR()
+
+    def move_mod_up(event=None):
+        mod_name = event.target.parent.id
+        #print(mod_name, '+')
+        idx = loadorder.index(mod_name)
+        if idx > 0:
+            loadorder[idx], loadorder[idx-1] = loadorder[idx-1], loadorder[idx]
+        draw_mod_list()
+
+    def move_mod_down(event=None):
+        mod_name = event.target.parent.id
+        #print(mod_name, '-')
+        idx = loadorder.index(mod_name)
+        if idx < len(loadorder)-1:
+            loadorder[idx], loadorder[idx+1] = loadorder[idx+1], loadorder[idx]
+        draw_mod_list()
+
+    def del_mod(event=None):
+        mod_name = event.target.parent.id
+        #print(mod_name, 'x')
+        idx = loadorder.index(mod_name)
+        try:
+            del loadorder[idx]
+            del mods[mod_name]
+            del mods_desc[mod_name]
+        except Exception:
+            pass
+        draw_mod_list()
+
+    @bind(doc['import_mod'], 'input')
+    def load_mod(event=None):
+        def _on_load(event):
+            raw_mod_source = event.target.result
+            mod_source = ''
+            mod_description = ''
+            is_description = True
+            for line in raw_mod_source.splitlines():
+                if not line.strip().startswith('#'):
+                    mod_source += line+'\n'
+                    is_description = False
+                elif is_description:
+                    mod_description += line.replace('#', '')+'\n'
+
+            mods[mod_file.name] = mod_source
+            mods_desc[mod_file.name] = mod_description
+            if mod_file.name not in loadorder:
+                loadorder.append(mod_file.name)
+            draw_mod_list()
+            doc['import_mod'].value = ''
+
+        mod_file = doc['import_mod'].files[0]
+        # window is data
+        reader = data.FileReader.new()
+        reader.readAsText(mod_file)
+        reader.bind('load', _on_load)
+
+    @bind(doc["write_master_mod"], 'mousedown')
+    def write_master_mod(event=None):
+        active_mods =[]
+        for checkbox in doc.get(selector='input[type="checkbox"]'):
+            itm_id = checkbox.value
+            if checkbox.checked:
+                active_mods.append(checkbox.value)
+
+        out_string = 'var loadorder = '
+        out_string += str(loadorder)
+        out_string +=';%0D%0A'
+
+        out_string += 'var active_mods = '
+        out_string += str(active_mods)
+        out_string +=';%0D%0A'
+
+        out_string += 'var mods_desc = '
+        out_string += str(mods_desc)
+        out_string +=';%0D%0A'
+
+        out_string += 'var mods = '
+        out_string += str(mods)
+        out_string +=';%0D%0A'
+
+        print(out_string)
+
+        doc["write_master_mod"].href = "data:text/plain," + out_string
+
+    # start up
+    draw_mod_list(True)
+
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,3492 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- '''Plotato Engine license:
+        Copyright 2021-2022 Shark in a Hat (shark_in_a_hat@protonmail.com)
+        Supported by: Matt, CodE, hinaberg, jehefuco, KryperCreeping,
+                  cuckold_yyc, GABRIEL ALFORD, Reld, MrSuicide,
+                  Naurd, Mathieu Gouillart, BettyPage, Maximus,
+                  Theo_Malt, Alex, Foxy'sFan, Dov D Bush, Overseer,
+                  mahena, An Anonymous Benefactor, Joe Steel, David Kindler,
+                  bsnick, BranVan, Jayjay Fan, lea, helena ho, coni,
+                  evilbiscuit, Iroquois Pliskin, Ab, Drunkmilkman,
+                  bouncy4u
+
+        Permission to use, copy, modify, and/or distribute this software
+        for any purpose with or without fee is hereby granted, provided
+        that the above copyright notice and this permission notice
+        appear in all copies.
+
+        THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
+        WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
+        WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
+        THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR
+        CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+        LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+        NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+        CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+        ''' -->
+        <!--"Note: HTML style comment have extra quotes to make it easier on editors." -->
+        <!-- "Meta-data" -->
+        <meta name="author" content="___TEMPLATE_AUTHOR___">
+        <meta name="copyright" content="___TEMPLATE_COPYRIGHT___">
+        <meta name="license" content="___TEMPLATE_LICENSE___">
+        <meta name="version" content="1.10" id="version">
+        <meta name="chsm" content="Q29weXJpZ2h0IDIwMjEgYnkgU2hhcmsgaW4gYSBIYXQu" id='chsm'>
+
+        <!-- "Icon, favicon, or shortcut icon, whatever works." -->
+        <link rel="shortcut icon" type="image/ico" href="___TEMPLATE_ICON___" id='favico1'>
+        <link rel="icon" type="image/ico" href="___TEMPLATE_ICON___" id='favico2'>
+
+        <!-- "Some styling is done in-line, usually for something that needs to be changed via scripting later "-->
+        <link rel="stylesheet" href="style/default.css">
+        <!-- "Game specific stylesheet"-->
+        <link rel="stylesheet" href="___TEMPLATE_STYLE___">
+
+        <!-- "Python implementation in JavaScript, see brython/BRYTHON_LICENCE.txt for license" -->
+        <script type="text/javascript" src="brython/brython.js"></script>
+        <script type="text/javascript" src="brython/brython_modules.js"></script>
+
+        <!-- "These are data containers." -->
+        <!-- "Note: .txt is used but these are .js scripts "  -->
+        <script type="text/javascript" src="data/plot.txt"></script>
+        <script type="text/javascript" src="data/items.txt"></script>
+        <script type="text/javascript" src="data/shops.txt"></script>
+        <script type="text/javascript" src="data/map_poi.txt"></script>
+        <script type="text/javascript" src="data/map_events.txt"></script>
+        <script type="text/javascript" src="data/version.txt"></script>
+        <script type="text/javascript" src="data/supporters.txt"></script>
+        <script type="text/javascript" src="data/voices.txt"></script>
+        <!-- "This is the mods data container" -->
+        <script type="text/javascript" src="data/mods.txt"></script>
+        <!-- "Q29weXJpZ2h0IDIwMjEgYnkgU2hhcmsgaW4gYSBIYXQu"-->
+
+        <!-- "TTS, kept in js for now. Minified" -->
+        <script type="text/javascript">
+            try{var synth=window.speechSynthesis,voices=synth.getVoices();function speak_txt(e,s,n,t,c,l){if(synth.speaking&&synth.cancel(),!(s<=0)&&""!==e){var o=new SpeechSynthesisUtterance(e);for(o.pitch=t,o.rate=n,o.volume=s,o.lang=l,i=0;i<voices.length;i++)if(voices[i].name===c){o.voice=voices[i];break}synth.speak(o)}}synth.onvoiceschanged=function(){voices=synth.getVoices()}}catch(e){console.error(e)}
+        </script>
+
+        <title id="title"> ___TEMPLATE_TITLE___ </title>
+    </head>
+
+    <!-- "For Brython to work the onload function is needed" -->
+    <!-- "There's not much point in adding the compiled modules to indexedDB, not many are used." -->
+    <body lang="en-US" onload="brython({debug:1, indexedDB:0})" id="main_body" style='width: var(--body_width); font-size: 100%'>
+
+        <!-- "SVG filters, can't use external file because of CORS" -->
+        <!-- "It is unclear if the css filter would provide better performance" -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0">
+          <filter id="filter_night">
+            <feColorMatrix
+                type="matrix"
+                values=" 0.2  0.0  0.0  0.0  0.0
+                         0.0  0.3  0.0  0.0  0.0
+                         0.1  0.1  0.5  0.0  0.0
+                         0.0  0.0  0.0  1.0  0.0"/>
+            <feDropShadow
+                dx="-2" dy="-6"
+                stdDeviation="10"
+                flood-opacity="1.0"
+            />
+          </filter>
+
+          <filter id="filter_default">
+            <feDropShadow
+                dx="-2" dy="-3"
+                stdDeviation="5"
+                flood-opacity="0.5"/>
+          </filter>
+        </svg>
+
+        <!-- "Error box, on top of the 'window'" -->
+        <div id="error_box"></div>
+        <!-- "No JS error" -->
+        <noscript>
+            <div class="error_txt">
+            You need to enable Javascript to play this game.
+            </div>
+        </noscript>
+
+        <!-- "Mod menu" -->
+        <div id="mod_menu" class="mod_menu" style="display: none;">
+            <div class="tts_header">MODS MENU:</div>
+            <div>Mod makers may add custom controls into this panel.<br>
+            If no mods are installed this space will be empty.<br>
+            Use <a href='dev/mod_manager.html' target='_blank'>dev/mod_manager.html</a> to manage mods<br>
+            <br>
+            </div>
+            <div id="mod_menu_content"></div>
+            <div class="tts_header">
+                <br>
+                <button type="button" class="tts_button" id="mod_menu_close">CLOSE MOD MENU</button>
+            </div>
+        </div>
+
+        <!-- "TTS config"-->
+        <div id="tts_config" class="tts_config" style="display: none;">
+            <div class="tts_header">Text-To-Speech (TTS) Config:</div>
+            <div class="tts_txt">
+                Here You can configure individual TTS voices for each actor in the game.<br>
+                To use the text-to-speech feature You need to set the speech volume!<br>
+                You can set the speech volume in the options menu in the main game window (below).<br>
+                The available choices depend on Your platform, OS, browser and language settings.<br>
+                Some browsers offer online voices, these may have terms of services and privacy policies.<br>
+                The voices for the grayed-out portrait are used by un-named, generic NPC.<br>
+                The actor with the '?' portrait is the default (narrator) voice, it's used to read all texts that are not spoken by any one person.<br>
+                <br>
+                On (some?) mobile devices the TTS engine may ignore all voice settings and use the users system wide settings.
+                Setting a different language may have an effect, unfortunetly the system may want a non-standard tag format (eg 'en_US' not 'en-US').<br>
+                Here you can override the language (tag) for all spoken text:
+                <input type="text" id="tts_lang" size="5" value="en-US" list="lang_tags" autocomplete="off">
+                <button type="button" class="tts_button_sml" id="tts_lang_set">SET</button><br>
+            </div>
+            <!--"list of BCP 47 language tags with alternative form (underscore)"-->
+        <datalist id="lang_tags">
+            <option value="ar-SA"><option value="ar_SA"><option value="bn-BD"><option value="bn_BD">
+            <option value="bn-IN"><option value="bn_IN"><option value="cs-CZ"><option value="cs_CZ">
+            <option value="da-DK"><option value="da_DK"><option value="de-AT"><option value="de_AT">
+            <option value="de-CH"><option value="de_CH"><option value="de-DE"><option value="de_DE">
+            <option value="el-GR"><option value="el_GR"><option value="en-AU"><option value="en_AU">
+            <option value="en-CA"><option value="en_CA"><option value="en-GB"><option value="en_GB">
+            <option value="en-IE"><option value="en_IE"><option value="en-IN"><option value="en_IN">
+            <option value="en-NZ"><option value="en_NZ"><option value="en-US"><option value="en_US">
+            <option value="en-ZA"><option value="en_ZA"><option value="es-AR"><option value="es_AR">
+            <option value="es-CL"><option value="es_CL"><option value="es-CO"><option value="es_CO">
+            <option value="es-ES"><option value="es_ES"><option value="es-MX"><option value="es_MX">
+            <option value="es-US"><option value="es_US"><option value="fi-FI"><option value="fi_FI">
+            <option value="fr-BE"><option value="fr_BE"><option value="fr-CA"><option value="fr_CA">
+            <option value="fr-CH"><option value="fr_CH"><option value="fr-FR"><option value="fr_FR">
+            <option value="he-IL"><option value="he_IL"><option value="hi-IN"><option value="hi_IN">
+            <option value="hu-HU"><option value="hu_HU"><option value="id-ID"><option value="id_ID">
+            <option value="it-CH"><option value="it_CH"><option value="it-IT"><option value="it_IT">
+            <option value="jp-JP"><option value="jp_JP"><option value="ko-KR"><option value="ko_KR">
+            <option value="nl-BE"><option value="nl_BE"><option value="nl-NL"><option value="nl_NL">
+            <option value="no-NO"><option value="no_NO"><option value="pl-PL"><option value="pl_PL">
+            <option value="pt-BR"><option value="pt_BR"><option value="pt-PT"><option value="pt_PT">
+            <option value="ro-RO"><option value="ro_RO"><option value="ru-RU"><option value="ru_RU">
+            <option value="sk-SK"><option value="sk_SK"><option value="sv-SE"><option value="sv_SE">
+            <option value="ta-IN"><option value="ta_IN"><option value="ta-LK"><option value="ta_LK">
+            <option value="th-TH"><option value="th_TH"><option value="tr-TR"><option value="tr_TR">
+            <option value="zh-CN"><option value="zh_CN"><option value="zh-HK"><option value="zh_HK">
+            <option value="zh-TW"><option value="zh_TW">
+        </datalist>
+            <div class='tts_voices' id='tts_voices'></div>
+            <div class="tts_header">
+                <button type="button" class="tts_button" id="tts_close">SAVE & CLOSE</button>
+            </div>
+        </div>
+        <!-- "History" -->
+        <div id="history" class="history" style="display: none;">
+            <div class="tts_header">History (this session only):</div>
+            <div class="history_txt" id="history_txt"></div>
+            <div class="tts_header">
+                <button type="button" class="tts_button" id="history_close">HIDE HISTORY</button>
+            </div>
+        </div>
+
+
+        <!-- "Modal dialog box " -->
+        <div class="modal" id="modal_box" style="display: none;">
+            <div class="modal_content">
+                <div class="modal_header" id="modal_header"></div>
+                <div id="modal_body"> </div>
+                <button type="button" class="modal_button" id="modal_ok">OK</button>
+                <button type="button" class="modal_button" id="modal_cancel">CANCEL</button>
+            </div>
+        </div>
+
+
+        <!-- "Main container, the game will usually render only into this div" -->
+        <div class="container" >
+
+            <!-- "Graphics stuff..." -->
+            <!-- "main_img is the background image at 1280x720px, it's behind everything else" -->
+            <!-- "uses a css opacity animation, images are layered and the bottom one removed after a delay"-->
+            <div id="imgs">
+                <img alt='Plotato Engine' srcset="img/plotato.webp" style="width: 100%; height: auto; position: absolute;">
+            </div>
+
+            <!-- "imgs_aux is a extra layer on top of the main image" -->
+            <!-- "currently used for oversized (scrolling/parallax) images and map pins" -->
+            <div id="imgs_aux"></div>
+
+            <!-- "npc_img is the NPC picture at 320x720, always on the right"  -->
+            <!-- "There can only be 1 (one) NPC show at a time, if you need more - bake them into the background img"  -->
+            <img class="npc_img" alt='npc image' srcset="img/npc/ben.png" style="display: none; filter: url(#filter_default);" id="npc_img">
+
+            <!-- "PC images at 320x720, there are multiple images stacked one on top of another." -->
+            <!-- "srcset is used in place of src to nerf some stupid Brython warnings "-->
+            <div class="pc_imgs" id="pc_imgs" style="filter: url(#filter_default);">
+                <img id="pc_img_nude"             alt='nude'           class="pc_img"  srcset="img/pc/body.png" style="display: none;">
+                <img id="pc_img_piercing_1"       alt=''               class="pc_img"  srcset="img/pc/_blank.png" style="display: none;">
+                <img id="pc_img_piercing_2"       alt=''               class="pc_img"  srcset="img/pc/_blank.png" style="display: none;">
+                <img id="pc_img_piercing_3"       alt=''               class="pc_img"  srcset="img/pc/_blank.png" style="display: none;">
+                <img id="pc_img_tattoo_1"         alt=''               class="pc_img"  srcset="img/pc/_blank.png" style="display: none;">
+                <img id="pc_img_tattoo_2"         alt=''               class="pc_img"  srcset="img/pc/_blank.png" style="display: none;">
+                <img id="pc_img_tattoo_3"         alt=''               class="pc_img"  srcset="img/pc/_blank.png" style="display: none;">
+                <img id="pc_img_underwear_bottom" alt='panties'        class="pc_img" srcset="img/pc/under_bottom_panties_white.png" style="display: none;">
+                <img id="pc_img_stockings"        alt='stockings'      class="pc_img" srcset="img/pc/stockings_white.png" style="display: none;">
+                <img id="pc_img_underwear_top"    alt='bra'            class="pc_img" srcset="img/pc/under_top_bra_white.png" style="display: none;">
+                <img id="pc_img_bottom"           alt='skirt or pants' class="pc_img" srcset="img/pc/bottom_school_skirt2.png" style="display: none;">
+                <img id="pc_img_top"              alt='shirt'          class="pc_img" srcset="img/pc/top_white_shirt3.png" style="display: none;">
+                <img id="pc_img_face"             alt='face'           class="pc_img" srcset="img/pc/face_smile.png" style="display: none;" >
+                <img id="pc_img_accessory"        alt='accessory'      class="pc_img" srcset="img/pc/collar_black_red.png" style="display: none;">
+                <img id="pc_img_hair"             alt='hair'           class="pc_img" srcset="img/pc/hair_hands.png" style="display: none;">
+                <img id="pc_img_wet"              alt='wet'           class="pc_img_wet"  srcset="img/pc/body_wet_overlay.png" style="display: none;">
+                <img id="pc_img_overlay"          alt='overlay'        class="pc_img" srcset="img/pc/_blank.png" style="display: none;">
+            </div>
+            <!-- "imgs_overlay is a extra layer on top of the main image AND pc/npc" -->
+            <div id="imgs_overlay" class="imgs_overlay">
+            </div>
+
+            <!-- "UI stuff..." -->
+            <!-- "Credits text" -->
+            <div id="credits" class="credits" style="display: none;"></div>
+
+            <!-- "Container for choice options" -->
+            <!-- "Choice buttons are added here via scripting." -->
+            <div class="choice_box" id="choice"></div>
+
+            <!-- "The shop and wardrobe share the same grid, it's a mess... " -->
+            <div class="grid" id="cloths" style="display: none;">
+                <!-- "The buy and sell grids are only visible in shop mode" -->
+                <div class="grid_box" id="buy_grid" style="display: none; grid-area: left;">
+                    <div class="shop_header" data-icon_after="&#xf061;">Buy </div>
+                    <div class="flex_spacer">
+                        <div class="shop_header">Money: </div>
+                        <div id="wear_money" class="blinker" style="animation-name: no_anim;"> 0$</div>
+                    </div>
+                    <select name="shop_filter" id="shop_filter" class='dropdown_filter'>
+                        <option value="all" id="shop_filter_all"> - show all - </option>
+                        <option value="top"> Shirts, Tops and Dresses </option>
+                        <option value="bottom"> Pants and Skirts </option>
+                        <option value="underwear"> Underwear </option>
+                        <option value="swimsuit"> Swimwear </option>
+                        <option value="accessories"> Accessories </option>
+                        <option value="school"> School wear </option>
+                        <option value="sport"> Sport wear </option>
+                        <option value="maid"> Maid Uniform </option>
+                        <option value="slutty"> Slutty </option>
+                        <option value="non_slutty"> Less Slutty</option>v
+                        <option value="party"> Party Clothes</option>v
+                        <option value="elegant">Elegant Clothes</option>v
+                        <option value="other"> Other </option>
+                    </select>
+                    <div class="scrollable" id="shop_buy" style="height: calc(100% - 6rem);"></div>
+                </div>
+                <div class="grid_box" id="sell_grid" style="display: none; grid-area: right_top;">
+                    <div class="shop_header" data-icon_before="&#xf060;"> Sell or Return</div>
+                    <div class="scrollable" id="shop_sell" style="height: calc(90% - 0.2rem);">
+                    </div>
+                </div>
+                <!-- "Clothing part"-->
+                <!-- "outfits"-->
+                <div class="grid_box" id="outfit_grid" style="display: none; grid-area: right_top;">
+                    <div class="shop_header"> Outfits:</div>
+                    <button id="outfit_add" type="button" class="shop_button">Save Current</button>
+                    <div class="scrollable" id="outfits" style="height: calc(90% - 3.0rem);">
+                    </div>
+                </div>
+
+                <!--"Box with current clothes select, close button and some stats."-->
+                <div class="grid_box" style="grid-area: right_bottom;">
+                    <div class="scrollable">
+                        <div class="shop_header">Select Clothes:</div>
+                        <div id="inventory_slots">
+                            <select name="cloths_accessory" id="cloths_accessory" class='dropdown_accessory'></select>
+                            <select name="cloths_top" id="cloths_top" class='dropdown_top'></select>
+                            <select name="cloths_underwear_top" class='dropdown_bra' id="cloths_underwear_top"></select>
+                            <select name="cloths_bottom" id="cloths_bottom" class='dropdown_bottom'></select>
+                            <select name="cloths_underwear_bottom" id="cloths_underwear_bottom" class='dropdown_panties'></select>
+                            <select name="cloths_stockings" id="cloths_stockings" class='dropdown_socks'></select>
+                        </div>
+                        <br>
+                        <div class="flex_spacer">
+                            <div class="shop_header">Lewdness:</div>
+                            <div id="wear_slut" class="blinker" style="animation-name: no_anim;">?</div>
+                        </div>
+                        <div id="wear_uniform"></div>
+                        <br>
+                        <button type="button" class="shop_button" id="shop_close"> Close</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- "Status bar, displays in-game date, time, money" -->
+            <div class="status" id="status" style="display: none">Day 0, Morning</div>
+
+            <!-- "Main_txt this is the box where all texts are displayed" -->
+            <div class="main_txt" id="main_txt" style="display: none; animation-name: no_anim;">
+                <pre id='txt'></pre>
+                <!--"txt_arrow shows up if the user needs to click to advance"-->
+                <div id='txt_arrow' class='arrow_anim' style="display: none;">&#xf105;</div>
+
+                <div id='txt_hide_ico' class='txt_hide_ico'>&#xf070;</div>
+            </div>
+
+            <div class="left_corner" id="left_corner">
+                <!-- "Settings and save/export/import, on top" -->
+                <details id="settings" class="settings" style="display: none">
+                    <!-- "Hammburger icon" -->
+                    <summary>
+                        <div class="icon_aws">&#xf0c9;</div>
+                    </summary>
+                    <!-- "The hidden settings panel"-->
+                    <div class="settings_columns">
+                            <div>
+                                <!-- " To save a file we need an <a> anchor, to load a file -an <input> hidden in a <label>." -->
+                                <a class="cfg_button" id="save_to_file" href="#" download="sluted_save.txt">SAVE</a>
+                                <label class="cfg_button">
+                                    <input type="file" id="load_from_file" accept=".txt">LOAD
+                                </label>
+                                <button type="button"class="cfg_button" id="mod_button">MODS</button>
+                                <div class="no_select">Font:</div>
+                                <button type="button" class="icon_aws" id="font_zoomout">&#xf146;</button><button type="button" class="icon_aws" id="font_zoomin">&#xf0fe;</button>
+                                <div class="no_select">Zoom:</div>
+                                <button type="button" class="icon_aws" id="zoomout">&#xf010;</button><button type="button" class="icon_aws" id="zoomin">&#xf00e;</button>
+                                <button type="button"class="cfg_button" id="zoom_reset">RESET</button>
+                            </div>
+                            <!--"Volume adjust, idk why browsers hate vertical sliders"-->
+                            <div>
+                                <button type="button" class="icon_aws" id="volume_mute">&#xf028;</button>
+                                <br>
+                                <div class="vslider_container">
+                                    <input type="range" min="0" max="100" id="volume" class="vslider">
+                                </div>
+                            </div>
+                            <div>
+                                <button type="button" class="icon_aws" id="cfg_tts">&#xf075;</button>
+                                <br>
+                                <div class="vslider_container">
+                                    <input type="range" value="0" min="0" max="100" id="tts_volume" class="vslider">
+                                </div>
+                            </div>
+                        </div>
+                </details>
+            </div>
+
+            <div class="right_corner" id="right_corner">
+                <!-- "Quest Log" -->
+                <details id="questlog" class="questlog" style="display: none">
+                    <!-- "icon" -->
+                    <summary>
+                        <div class="icon_aws">&#xf059;</div>
+                    </summary>
+                    <div class="questlog_text" id="questlog_text">
+                    </div>
+                    </details>
+                <!-- "Rollback" -->
+                <details id="rollback" class="rollback" style="display: none">
+                    <!-- "icon" -->
+                    <summary>
+                        <div class="icon_aws">&#xf049;</div>
+                    </summary>
+                    <!-- "The hidden rollback panel"-->
+                        <div class="rollback_text">Clicking the rollback button will move you back to your last choice. Clicking the history button will show all prevoius text.</div>
+                        <button type="button" class="rollback_button" id="rollback_button">ROLLBACK</button>
+                        <button type="button" class="rollback_button" id="history_button">SHOW HISTORY</button>
+                </details>
+            </div>
+            <!-- "Overlay is used for color splash effects"-->
+            <!-- "It could be used for filter effects if only FF supported backdrop-filter"-->
+            <div class="overlay" id="overlay" style="background-color: rgb(255,230,241);  mix-blend-mode: screen; backdrop-filter: none;"></div>
+
+            <!--"Loading 'screen'"-->
+            <div class="center" id='loading'>
+                <h1>
+                    <span class="icon_aws" style="animation: rotate360 2s linear infinite; cursor: default;">&#xf110;</span>
+                    Loading, please wait...
+                    <span class="load_timeout">This is taking too long! Check the console for errors.</span>
+                </h1>
+            </div>
+
+        <div id="monetize" class="monetize" style="display: none">
+            ___TEMPLATE_MONETIZE_BUTTONS___
+        </div>
+
+        <!--"End of 'container' div"-->
+        </div>
+
+        <!-- "Copyright notice DO NOT REMOVE!" -->
+        <h5 id="copyright" class="copyright">___TEMPLATE_COPYRIGHT___</h5>
+
+        <!--"Show some info if we're in portrait mode"-->
+        <div class="portrait_mode">
+            <span class="icon_aws" style="cursor: default;">&#xf071;</span>
+            This Game works best in landscape mode!
+            <span class="icon_aws" style="animation: rotate90 2s ease-in-out infinite; cursor: default;">&#xf3cd;</span>
+        </div>
+
+        <div class="click_anywhere" id="click_anywhere" style="display: none;"></div>
+
+
+        <!--"Audio stuff..."-->
+        <audio id="music_player">
+            <source src="audio/blank.mp3" type="audio/mpeg">
+        </audio>
+
+        <div id='spacer' style='height: 2em;'></div>
+
+        <!-- "HERE BE PYTHON! Turn your IDE to PEP-8 mode." -->
+        <!-- "This is the 'Game Engine' part of the game." -->
+        <!-- "Browsers do not have access to the filesystem*, so the Python sourcecode can't be in an external file." -->
+        <script type="text/python">
+        __doc__ = "Plotato Engine. Copyright 2021 Shark in a Hat, distributed under the ISC license"
+
+        from browser import bind, html
+        from browser import document as doc
+        from browser import window as data
+        from javascript import Math
+        from javascript import JSON
+        from javascript import Date
+
+        # For some reason Bryton tends to break when using global,
+        # we replace it with out own that lives in js space where everything is global and rules don't exist
+        class dotdict(dict):
+            __getattr__ = dict.get
+            __setattr__ = dict.__setitem__
+            __delattr__ = dict.__delitem__
+
+        data.glob = dotdict()
+
+        ################################################################
+        ## Error feedback
+        ################################################################
+        _error_log = []
+        def show_error(txt, do_clear=False):
+            '''Show a error message, if clear is True old error msg are removed '''
+            print('ERROR: '+str(txt))
+            if do_clear:
+               doc['error_box'].clear()
+            if txt:
+                try:
+                    _error_log.append([txt, save.current_plot_node])
+                except Exception as e:
+                    _error_log.append([txt, e])
+                err_div = html.DIV(str(txt), Class='error_txt')
+                btn = html.BUTTON('HIDE ERROR',
+                                  type='button',
+                                  Class='err_button')
+                btn.bind('click', _clear_error)
+                #err_div.appendChild(html.DIV('Please report this error in the F95Zone thread.' ) )
+                err_div.appendChild(btn )
+                doc['error_box'].appendChild(err_div)
+
+        def _clear_error(event=None):
+            '''Remove a error from the error box '''
+            event.target.parent.remove()
+
+        ################################################################
+        ## Util
+        ################################################################
+        def _restart_anim(element, anim_name=None, count=None, duration=None):
+            '''Change and/or restart the css animation-name of element.
+               Note: works by replacing the element with (a copy of?) the element
+            '''
+            temp = doc[element]
+            if anim_name:
+                temp.style['animation-name'] = anim_name
+            if count:
+                temp.style['animation-iteration-count'] = count
+            if duration:
+                temp.style['animation-duration'] = duration
+            doc[element].replaceWith(temp)
+
+        def _show(element_id, show=True):
+            '''Shows (or hides) an dom element with id=element_id
+            Note: Hidden elements now use 'display: none;' not 'visibility: hidden;' !
+            '''
+            vis = '' if show else 'none'
+            if isinstance(element_id, (list, tuple)):
+                for el_id in element_id:
+                    doc[el_id].style.display = vis
+            elif element_id in doc:
+                doc[element_id].style.display = vis
+
+        def add_mod_cfg(name, buttons):
+            ''' Adds a div with the mod name and buttons to the mods config screen
+               'buttons' should be a dict with the text as the key and the command as the value
+            '''
+            mod_div = html.DIV(Class='mod_div')
+            mod_div.appendChild(html.DIV(name))
+            for text, command in buttons.items():
+                b = html.BUTTON(text, type='button', Class='mod_button')
+                b.bind('click', command)
+                mod_div.appendChild(b)
+            doc['mod_menu_content'].appendChild(mod_div)
+            return mod_div
+
+        def clamp(x, min_val, max_val):
+            ''' returns the value of x constrained to the range min_val to max_val. '''
+            return max(min_val, min(x, max_val))
+
+        ################################################################
+        ## Constants
+        ################################################################
+        class TIME(object):
+            '''Helper class to keep constants '''
+            # time-of-day
+            NIGHT = 0       # 0-3
+            MORNING = 1     # 4-7
+            NOON = 2        # 8-11
+            MIDDAY = 3      # 12-15
+            AFTERNOON = 4   # 16-19
+            EVENING = 5     # 20-23
+            # day names
+            # game starts on Monday so day 0 is Monday
+            MONDAY = 0
+            TUESDAY = 1
+            WEDNESDAY = 2
+            THURSDAY = 3
+            FRIDAY = 4
+            SATURDAY = 5
+            SUNDAY = 6
+            # strings
+            DAY_NAMES = {0:'Monday', 1:'Tuesday', 2:'Wednesday', 3:'Thursday',
+                        4:'Friday',  5:'Saturday', 6:'Sunday'}
+            TIME_NAMES = { 0:'Night', 1:'Morning', 2:'Noon', 3:'Midday',
+                           4:'Afternoon', 5:'Evening'}
+            TIME_NAMES_AT = { 0:' at night', 1:' in the morning', 2:'', 3:'',
+                           4:' in the afternoon', 5:' in the evening'}
+
+        class EXPO(object):
+            '''Helper class to keep constants '''
+            # exposure
+            NUDE = 127
+            POKIES = 64
+            PUSSY = 32
+            BOOBS = 16
+            PART_PUSSY = 8
+            PART_BOOBS = 4
+            BOTTOMLESS = 2
+            TOPLESS = 1
+            UNDRESSED = 3 # = BOTTOMLESS + TOPLESS
+            EXPOSED = 48 # = PUSSY+BOOBS
+            PART_EXPOSED = 12 # = PART_PUSSY + PART_BOOBS
+            EXPOSED_ANY_PART = 60 # = EXPOSED + PART_EXPOSED
+            INDECENT = 51 # = UNDRESSED+EXPOSED
+
+            IDX_POKIES = 0
+            IDX_PUSSY = 1
+            IDX_BOOBS = 2
+            IDX_PART_PUSSY = 3
+            IDX_PART_BOOBS = 4
+            IDX_BOTTOMLESS = 5
+            IDX_TOPLESS = 6
+
+            SLUT_MULTI = [1,    # POKIES
+                          16,   # PUSSY
+                          13,   # BOOBS
+                          5,    # PART_PUSSY
+                          3,    # PART_BOOBS
+                          2,    # BOTTOMLESS
+                          1]    # TOPLESS
+        ################################################################
+        ## Random functions
+        ## use js so we don't have to import the Python random.random()
+        ################################################################
+        def random():
+            '''Returns a random float in 0.0-1.0 range,
+            uses javascript  Math.random'''
+            return Math.random()
+
+        def randint(start, stop=None):
+            '''Returns a random int in start-stop range,
+            Note: 'start' and 'stop' are included in the results eg.:
+            randint(1,6) may return 1, 2, 3, 4, 5 or 6!
+            uses javascript Math.random'''
+            if stop is None:
+                stop = start
+                start = 0
+            return Math.floor(Math.random() * ((stop+1) - start) ) + start;
+
+        def random_choice(input_list, weights=None):
+            '''Returns a random element from the input_list
+                weights is a optional list of integer weights
+            '''
+            if not input_list:
+                return None
+            if len(input_list) == 1:
+                return input_list[0]
+            if weights is None:
+                return input_list[randint(len(input_list)-1)]
+            else:
+                new_list = []
+                for i, w in zip(input_list, weights):
+                    new_list+=[i]*w
+                return new_list[randint(len(new_list)-1)]
+
+        def random_choice_adv(name, weights, static_weights_bonus=None):
+            '''Returns a weighted random element from the weights dict
+               eg.{'a':10,'b':5,'c':1} returns 'a' in 62.5%, 'b' in 32.25%, 'c' in 6.25%
+               After each call the chosen's weights are reduced by 1 (to a minimum of 1).
+               'name' is the prefix used for storing previous results.
+               When all weights become equal the wights reset to the initial value.
+               The same item can't be chosen twice in a row.
+               if static_weights_bonus is provided, its values are added to the weights dict
+            '''
+            # restore saved weights
+            if '_RCA_'+name in save:
+                try:
+                    # eval is used to convert a string from localStorage to a dict
+                    updated_weights = eval(save['_RCA_'+name])
+                    for key in weights:
+                        if key in updated_weights:
+                            weights[key] = updated_weights[key]
+                except Exception as e:
+                    show_error(f"RCA Error: {e}")
+            # change the weights based on a static bonus
+            if static_weights_bonus:
+                for k, v in static_weights_bonus.items():
+                    if k in weights:
+                        weights[k]+=v
+            #exclude last
+            exclude = None
+            if '_last_RCA_'+name in save:
+                exclude = save['_last_RCA_'+name]
+
+            # choose random item
+            new_list = []
+            for k, v in weights.items():
+                if k != exclude:
+                    new_list+=[k]*v
+            chosen_item = new_list[randint(len(new_list)-1)]
+
+            # we need to store the weights now, but without the bonus
+            # so change the weights BACK
+            if static_weights_bonus:
+                for k, v in static_weights_bonus.items():
+                    if k in weights:
+                        weights[k]-=v
+
+            # update weights
+            weights[chosen_item] = max(1, weights[chosen_item]-1)
+            # check if all weights are equal
+            expected_w = weights[chosen_item]
+            if all(w == expected_w for w in weights.values()):
+                 #weights = {k:(1+d(6) if k!=chosen_item else 1) for k,v in weights.items()}
+                save.remove('_RCA_'+name)
+                save.remove('_last_RCA_'+name)
+            else:
+                # save weights
+                save['_RCA_'+name] = str(weights)
+                save['_last_RCA_'+name] = chosen_item
+            # return chosen
+            return chosen_item
+
+        def chance(p):
+            ''' Returns True in 'p'% cases,
+                'p' should be in the 0-100 range
+            '''
+            return p*0.01 >= Math.random()
+
+        def d(sides, num=1):
+            '''Rolls a die with 'sides' number of sides, eg. d(6),
+                to roll multiple dice pass in a num eg. D&D '4d6' would be d(6, 4)
+            '''
+            total = 0
+            for i in range(num):
+                total+= randint(1, sides)
+            return total
+
+        def open_url(url, new_tab=True):
+            ''' Opens/redirects to an URL.
+            If new_tab is True it will be opened in a new tab/window(?)'''
+            if 'Electron' in data.navigator.userAgent:
+                # if we're running in Electron we need to open a default browser window
+                data.electron.shellOpenExternal(url)
+                return
+            # js 'window' is imported as 'data' because of Reasons.
+            if new_tab:
+                data.open(url, '_blank','noreferrer')
+            else:
+                data.location.href = url
+
+        ################################################################
+        ## Local storage / persistent data management
+        ## a bit of syntax sugar to make writing and reading data
+        ## from and to the browser local storage a simpler.
+        ################################################################
+        class InMemoryStorage(dict):
+            def __init__(self):
+                '''Create an instance of a ram-only memory storege class
+                '''
+                if 'in_memory_storage' not in data.glob:
+                    data.glob.in_memory_storage = dict()
+
+            def __getitem__(self, key):  
+                '''  x.__getitem__(y) <==> x[y]'''
+                if key in data.glob.in_memory_storage:
+                    return data.glob.in_memory_storage[key]
+                return None
+
+            def __setitem__(self, key, item):     
+                '''Set self[key] to value.'''           
+                data.glob.in_memory_storage[key] = item
+
+            def setItem(self, key, item):
+                '''Set self[key] to value.'''
+                data.glob.in_memory_storage[key] = item
+
+            def getItem(self, key):
+                ''' Return the value for the key'''
+                if key in data.glob.in_memory_storage:
+                    return data.glob.in_memory_storage[key]
+                return None    
+
+        class DataStore(object):
+            ''' Helper class for data storage
+            Note: Any and all data storage in the game (should) use this class,
+                  Changing the way data is saved is a one-step process
+                  limited to changing how this class works.
+            '''
+            # we need to test if local storage is available
+            # without it we can't save nor load so playing is pointless
+            try:
+                # we will use db_storage as a class variable, Borg pattern style.
+                db_storage = data.localStorage
+                db_storage.setItem('x', 'x'*2**12)
+                assert db_storage.getItem('x') == 'x'*2**12
+                db_storage.removeItem('x')
+            except Exception:
+                show_error("Error: Your browser does not support 'Local Storage' or the storage in your browser is full! Autosave DISABLED.", True)
+                db_storage = InMemoryStorage()
+
+            @classmethod
+            def exists(cls, name):
+                '''Class method, returns True if a DataStore with the given name exists (has any data stored)
+                '''
+                if cls.db_storage.getItem('___TEMPLATE_PREFIX___'+name):
+                    return True
+                return False
+
+            def __init__(self, name):
+                ''' Create an instance with the given name
+                '''
+                self._name = '___TEMPLATE_PREFIX___'+name
+                if self._name in self.db_storage:
+                    str_dict = self.db_storage[self._name]
+                    try:
+                        self.__inner_dict = eval(str_dict)
+                    except Exception as e:
+                        show_error(f'Initial data de-serialization error: {e}')
+                else:
+                    self.__inner_dict = {}
+                    self.db_storage.setItem(self._name, '{}')
+
+            @property
+            def inner_dict(self):
+                ''' Property, returns the usabable dict version of the data stored in the instance'''
+                if self.__inner_dict is None:
+                    str_dict = self.db_storage[self._name]
+                    try:
+                        self.__inner_dict = eval(str_dict)
+                    except Exception as e:
+                        show_error(f'Data de-serialization error: {e}')
+                return self.__inner_dict
+
+            def __getitem__(self, key):
+                '''  x.__getitem__(y) <==> x[y] '''
+                if key in self.inner_dict:
+                    return self.inner_dict[key]
+                else:
+                    self.inner_dict[key]=0
+                    self.db_storage[self._name] = str(self.__inner_dict)
+                    return 0
+
+            def __setitem__(self, key, item):
+                '''Set self[key] to value.'''
+                self.inner_dict[key] = item
+                self.db_storage[self._name] = str(self.__inner_dict)
+
+            def add_item(self, name, value=''):
+                '''Set name to value, same as self[name]=value'''
+                if value=='' and name in self.inner_dict:
+                    return
+                self.inner_dict[name] = value
+                self.db_storage[self._name] = str(self.__inner_dict)
+
+            def set_list(self, key, input_list):
+                ''' Stores the input_list as a string
+                '''
+                self.inner_dict[key] = str(input_list)
+                self.db_storage[self._name] = str(self.__inner_dict)
+
+            def get_list(self, name):
+                ''' Returns a value as if it was a list
+                '''
+                if name in self.inner_dict:
+                    v = self.inner_dict[name]
+                    try:
+                        return eval(v)
+                    except Exception:
+                        return []
+                return []
+
+            def append_list(self, name, value):
+                '''Appends an item to a list stored using set_list()
+                    Creates a new list if needed
+                '''
+                inner_list = []
+                if name in self.inner_dict:
+                    v = self.inner_dict[name]
+                    try:
+                        inner_list = eval(v)
+                    except Exception:
+                        pass
+                inner_list.append(value)
+                self.inner_dict[name] = str(inner_list)
+                self.db_storage[self._name] = str(self.__inner_dict)
+
+            def del_from_list(self, list_name, value):
+                ''' Remove an item from a list stored using set_list()
+                '''
+                list_copy = self.get_list(list_name)
+                if value in list_copy:
+                    del list_copy[list_copy.index(value)]
+                    if list_copy:
+                        self.inner_dict[list_name] = str(list_copy)
+                    else:
+                        del self.inner_dict[list_name]
+                    self.db_storage[self._name] = str(self.__inner_dict)
+
+            def is_empty(self):
+                '''Returns True if there are no keys in the db '''
+                if self.inner_dict:
+                    return False
+                return True
+
+            def items(self):
+                '''Returns an iterator over the key and values'''
+                return self.inner_dict.items()
+
+            def clear(self, subprefix=None):
+                '''Removes keys and values
+                 if subprefix is not empty only removes keys that starts with subprefix'''
+                if subprefix is None:
+                    self.__inner_dict = {}
+                    self.db_storage.setItem(self._name, '{}')
+                else:
+                    keys_to_del = []
+                    for key in self.inner_dict:
+                        if key.startswith(subprefix):
+                            keys_to_del.append(key)
+                    for key_to_del in keys_to_del:
+                        del self.inner_dict[key_to_del]
+                    self.db_storage[self._name] = str(self.__inner_dict)
+
+            def add_flag(self, key, value):
+                ''' Adds a flag to a key name.
+                    Use has_flag() to check if the flag has been set.
+                '''
+                if key in self.inner_dict:
+                    self.inner_dict[key].add(value)
+                else:
+                    self.inner_dict[key] = {value}
+                self.db_storage[self._name] = str(self.__inner_dict)
+
+            def has_flag(self, key, value):
+                ''' Checks if value flag has been set under the key name
+                '''
+                if key in self.inner_dict:
+                    if value in self.inner_dict[key]:
+                        return True
+                return False
+
+            def get_flags(self, key):
+                ''' Returns a list of flags set under the key name.
+                '''
+                if key in self.inner_dict:
+                    return list(self.inner_dict[key])
+                return []
+
+            def remove_flag(self, key, flag):
+                ''' Removes flag (or multiple flags if flag is a set)
+                '''
+                if key in self.inner_dict:
+                    if type(flag) == set:
+                        self.inner_dict[key] -= flag
+                        self.db_storage[self._name] = str(self.__inner_dict)
+                    elif flag in self.inner_dict[key]:
+                        self.inner_dict[key].remove(flag)
+                        self.db_storage[self._name] = str(self.__inner_dict)
+
+            def remove(self, *keys):
+                ''' Removes a key(s) from the DB
+                '''
+                for key in keys:
+                    if key in self.inner_dict:
+                        del self.inner_dict[key]
+                self.db_storage[self._name] = str(self.__inner_dict)
+
+            def to_string(self):
+                '''Returns a string with all the values of the DataStore,
+                    this is the internal representation of the data
+                '''
+                return self.db_storage[self._name]
+
+            def from_string(self, input_string, clear_old=True):
+                ''' Recreates the DataStore values from the input_string,
+                    the input_string should be one generated by DataStore.to_string()
+                '''
+                if clear_old:
+                    self.clear()
+                self.db_storage[self._name] = input_string
+                try:
+                    self.__inner_dict = eval(input_string)
+                except Exception as e:
+                    show_error(f'String de-serialization error: {e}')
+
+            def __contains__(self, key):
+                '''True if the DataStore has the specified key, else False.'''
+                return key in self.inner_dict
+
+            def __getattr__(self, key):
+                '''dot access to values hack'''
+                return self.__getitem__(key)
+
+            def __setattr__(self, key, item):
+                '''dot access to values hack'''
+                super().__setattr__(key, item)
+                if not key.startswith('_'):
+                    # we're not setting an attribute really
+                    # just store it in the inner_dict,
+                    # store the inner_dict in localstorage
+                    # and del the attribute on the instance
+                    delattr(self, key)
+                    self.inner_dict[key] = item
+                    self.db_storage[self._name] = str(self.__inner_dict)
+
+            def __delitem__(self, key):
+                ''' Delete self[key]. '''
+                if key in self.inner_dict:
+                    del self.inner_dict[key]
+                    self.db_storage[self._name] = str(self.__inner_dict)
+
+        # setup the default data structure
+        inventory = DataStore('inventory')
+        save = DataStore('save')
+        cfg = DataStore('cfg')
+        quests = DataStore('quests')
+        rollback_save = DataStore('rollback_save')
+        rollback_inventory = DataStore('rollback_inventory')
+        rollback_quests = DataStore('rollback_quests')
+        ################################################################
+        ## Save/load functions for writing/reading files
+        ################################################################
+        @bind(doc['load_from_file'], 'input')
+        def _load_from_file(ev):
+            '''Loads a save from a given file,
+               needs to be bound to a file input 'input' element
+               (eg. <input type="file" id="load_from_file">)
+            '''
+            def _onload(event):
+                '''Fired when the browser returns file/filepath to load a savegame
+                '''
+                json_data = event.target.result
+                try:
+                    loaded_dict = JSON.parse(json_data)
+                    if 'protocol' in loaded_dict:
+                        if loaded_dict['protocol'] == 1:
+                            save.from_string(loaded_dict['save'])
+                            inventory.from_string(loaded_dict['inventory'])
+                            cfg.from_string(loaded_dict['cfg'])
+                        elif loaded_dict['protocol'] == 2:
+                            save.from_string(loaded_dict['save'])
+                            inventory.from_string(loaded_dict['inventory'])
+                            cfg.from_string(loaded_dict['cfg'])
+                            rollback_save.from_string(loaded_dict['rollback_save'])
+                        elif loaded_dict['protocol'] == 3:
+                            save.from_string(loaded_dict['save'])
+                            inventory.from_string(loaded_dict['inventory'])
+                            cfg.from_string(loaded_dict['cfg'])
+                            rollback_save.from_string(loaded_dict['rollback_save'])
+                            rollback_quests.from_string(loaded_dict['rollback_quests'])
+                        elif loaded_dict['protocol'] == 4:
+                            # main part
+                            save.from_string(loaded_dict['save'])
+                            inventory.from_string(loaded_dict['inventory'])
+                            quests.from_string(loaded_dict['quests'])
+                            # config
+                            cfg.from_string(loaded_dict['cfg'])
+                            # rollback
+                            rollback_save.from_string(loaded_dict['rollback_save'])
+                            rollback_inventory.from_string(loaded_dict['rollback_inventory'])
+                            rollback_quests.from_string(loaded_dict['rollback_quests'])
+
+                        move_to('load_last')
+                except Exception as e:
+                    show_error(f'Error: Could not load data from file! {e}')
+                # clear value
+                doc['load_from_file'].value = ''
+
+            try:
+                json_file = doc['load_from_file'].files[0]
+            except Exception as e:
+                print(f'Warning: No savefile selected. {e}')
+                return
+            # window is data
+            reader = data.FileReader.new()
+            reader.readAsText(json_file)
+            reader.bind('load', _onload)
+
+        @bind(doc['save_to_file'], 'mousedown')
+        def _save_to_file(event=None):
+            '''Writes a save to a file,
+                needs to be bound to a 'mousedown' event in a download link element
+                (eg. <a href="#" download>...</a>)
+            '''
+            # turn the Local Storage to dict
+            storage_dict = {'info':'This is a Plotato game save file.',
+                            'protocol':4,
+                            'date': Date.new().toLocaleString(),
+                            'user_agent': str(data.navigator.userAgent),
+                            'game_version': data.data_version +'-'+doc['version'].content}
+            storage_dict['inventory'] = inventory.to_string()
+            storage_dict['save'] = save.to_string()
+            storage_dict['quests'] = quests.to_string()
+            storage_dict['cfg'] = cfg.to_string()
+            storage_dict['rollback_save'] = rollback_save.to_string()
+            storage_dict['rollback_inventory'] = rollback_inventory.to_string()
+            storage_dict['rollback_quests'] = rollback_quests.to_string()
+            # dict to json
+            jdata = JSON.stringify(storage_dict, None, 2)            
+            # ask user to manually save file, because we have no filesystem access
+            doc['save_to_file'].href = 'data:text/plain,' + jdata
+
+        ################################################################
+        ## In-game time
+        ################################################################
+        def set_tce(target, day, hour, map_poi, map_redirect):
+            ''' Set a Time Critical Event (tce) that will start on the given 'day' and 'hour'.
+                'target' is the name of the plot node that the player will jump to.
+                 the event will trigger when moving via the map,
+                 the map_poi must be one of the known Points Of Interest,
+                 when the player clicks it at the right time ('day', 'hour') it will jump
+                 to the 'target' plot node. Clicking any other poi will jump to 'map_redirect'
+                 If a TCE is set, the in-game clock will never (normally) progress past day*24+hour,
+                 until the event is resolved.
+                 Only 1 (one) TCE can be set for a given day, hour.
+            '''
+            timestamp = int(day*24+hour)
+            save.add_flag('_tce__timestamps', timestamp)
+            save.set_list('_tce_'+str(timestamp), [target, day, hour, map_poi, map_redirect])
+
+        def remove_tce(day=None, hour=None):
+            ''' Removes (cancels) a TCE.
+            Called automatically when a TCE is triggered from map.
+            If day is None and hour is None the current time (save.time) is used
+            '''
+            if day is not None and hour is not None:
+                timestamp = int(day*24+hour)
+            else:
+                timestamp = save.time
+            if timestamp:
+                save.remove('_tce_'+str(timestamp))
+                save.remove_flag('_tce__timestamps', timestamp)
+            else:
+                print("Warning: Can't remove TCE, no valid TCE timestamp.")
+
+        def _tce_clamp_time(current_time, target_time):
+            ''' Returns the maximum future time between current_time and target_time
+                that can be set before hitting a Time Critical Event
+            '''
+            # There's a TCE with the current time, clock can't go past that
+            if save.has_flag('_tce__timestamps', current_time):
+                return current_time
+            # check when the next event is going to happen (if there is one)
+            events = save.get_flags('_tce__timestamps')
+            if events:
+                return min(target_time, min(events))
+            else:
+                return target_time
+
+        def get_tce_arg(tce, arg_name):
+            ''' Returns the arguments used for creating the given TCE.
+                tce must be a list as returned by get_tce()
+                valid arg_name values: 'target', 'day', 'hour', 'map_poi', 'map_redirect'
+            '''
+            if tce is None:
+                return None
+            else:
+                names = {'target':0, 'day':1, 'hour':2, 'map_poi':3, 'map_redirect':4}
+                if arg_name in names:
+                    return tce[names[arg_name]]
+            return None
+
+        def get_tce(timestamp = None):
+            ''' Returns the [target, day, hour, map_poi, map_redirect]
+                set for a TCE with the given timestamp (day*24+hour)
+                if timestamp is None - the current time (save.time) is used
+                if there is no TCE with the timestamp - returns None
+            '''
+            if timestamp is None:
+                timestamp = save.time
+            if save.has_flag('_tce__timestamps', timestamp):
+                return save.get_list('_tce_'+str(timestamp))
+            else:
+                return None
+
+        def get_hour():
+            '''Returns the current hour'''
+            day, hour = divmod(int(save.time), 24)
+            return hour
+
+        def get_weekday():
+            '''Returns the day of the week as an int'''
+            day, hour = divmod(int(save.time), 24)
+            return int(day%7)
+
+        def is_weekday(weekday):
+            '''Returns True if today is 'weekday'
+               eg.: 'is_weekday(TIME.MONDAY)'
+               To test if it's a 'work day' use 'not is_weekend()'
+            '''
+            day, hour = divmod(int(save.time), 24)
+            return int(day%7) == weekday
+
+        def is_weekend():
+            ''' Returns True if it's SATURDAY, SUNDAY or FRIDAY AFTERNOON
+            '''
+            day, hour = divmod(int(save.time), 24)
+            weekday = int(day%7)
+            if (weekday == TIME.FRIDAY and hour>=15) or weekday > TIME.FRIDAY:
+                return True
+            return False
+
+        def get_datetime():
+            ''' Returns (day, hour)'''
+            return divmod(int(save.time), 24)
+
+        def get_day():
+            ''' Returns the current day number (starting from 0)'''
+            day, hour = divmod(int(save.time), 24)
+            return day
+
+        def is_time_of_day(*time_of_day_list):
+            '''Returns True if the current time of day is in the time_of_day_list
+               eg: 'is_time_of_day(TIME.MORNING, TIME.NOON)'
+            '''
+            return get_time_of_day() in time_of_day_list
+
+        def is_day():
+            ''' Returns True if it's MORNING, NOON, MIDDAY, or AFTERNOON'''
+            return is_time_of_day(TIME.MORNING, TIME.NOON, TIME.MIDDAY, TIME.AFTERNOON)
+
+        def get_time_of_day():
+            ''' Returns the time of day as an int'''
+            day, hour = divmod(int(save.time), 24)
+            return hour//4
+
+        def set_hard_datetime(day, hour):
+            '''Set the in game time, ignoring everything '''
+            save.time = day*24 + hour
+
+        def get_day_name(future_day=0, exact_day=None):
+            ''' Returns the (string) name of the current day
+                if future_day is provided it returns the name
+                of the day future_day days away
+            '''
+            if exact_day:
+                return TIME.DAY_NAMES[int(exact_day%7)]
+            day, hour = divmod(int(save.time), 24)
+            return TIME.DAY_NAMES[int((day+future_day)%7)]
+
+        def get_time_of_day_name(use_in_at=False):
+            ''' Returns the time of day as a string'''
+            day, hour = divmod(save.time, 24)
+            if use_in_at:
+                return TIME.TIME_NAMES_AT[hour//4]
+            return TIME.TIME_NAMES[hour//4]
+
+        def set_time_of_day(time_of_day):
+            ''' Sets the time of day, (usually) moving the time forward.
+                Note: The actual time is set to the first hour in the give time period,
+                      this may turn the clock back by up to 3h!
+                      eg. if it's 7AM in the morning and you call
+                          set_time_of_day(TIME.MORNING) it will become 4AM
+
+            '''
+            current_time = int(save.time)
+            day, hour = divmod(current_time, 24)
+            target_time = day*24 +  time_of_day*4
+
+            if target_time >= (current_time-3):
+                pass
+            elif target_time >= (current_time-7):
+                target_time = day*24 +  time_of_day*4 +3
+            else:
+                target_time = (day+1)*24 + time_of_day*4
+
+            save.time = _tce_clamp_time(current_time, target_time)
+            progress_time(0)
+
+        def progress_time(amount=1):
+            ''' Moves the in-game clock by amount hours (int),
+                also displays the current time/date in the status div
+            '''
+            final_time = save.time
+            if amount > 0:
+                current_time = int(save.time)
+                target_time = current_time + amount
+                final_time = _tce_clamp_time(current_time, target_time)
+                save.time = final_time
+            # update the status display
+            day, hour = divmod(final_time, 24)
+            time_name = TIME.TIME_NAMES[hour//4]
+            day_name = TIME.DAY_NAMES[int(day%7)]
+            if hour//4 == TIME.NIGHT:
+                day_name = TIME.DAY_NAMES[int((day-1)%7)]+'/'+ day_name
+            money = save.money
+            _show('status')
+            doc['status'].textContent = f'Day {day}, {day_name} {time_name}, ${money}'
+
+        ################################################################
+        ## Items/inventory management
+        ################################################################
+        def get_equipped(tag=None, slot=None, exclude_tag='nude'):
+            ''' Returns a list of equipped items
+                if tag is not None only the items with the tag get returned
+                if slot is not None only the (one) item in the slot is returned (if any)
+                no item that has the 'exclude_tag' tag will be returned
+            '''
+            equipped = []
+            # add option for many exclude tags
+            exclude_tags = set()
+            if type(exclude_tag) == set:
+                exclude_tags =  exclude_tag
+            elif type(exclude_tag) == list or type(exclude_tag) == tuple:
+                exclude_tags = set(exclude_tag)
+            else:
+                exclude_tags.add(exclude_tag)
+
+            for item_id, item_slot in inventory.items():
+                if ( (item_id in data.items) and
+                     #(exclude_tag not in data.items[item_id]['tags']) and
+                     ( not exclude_tags & set(data.items[item_id]['tags']) ) and
+                     (item_slot and (slot is None or slot==item_slot)) and
+                     (tag is None or tag in data.items[item_id]['tags']) ):
+                    equipped.append(item_id)
+            if equipped and slot is not None:
+                return equipped[0]
+            return equipped
+
+        def get_item_name(item_id, *args):
+            ''' Returns the name or names of the given item or items
+                Note: Parts of the names in parenthesis will be dropped e.g 'Shirt (pink)' -> 'Shirt'
+                      For multiple items the names will be comma separated.
+            '''
+            names = ''
+            if item_id in data.items:
+                n = data.items[item_id]['name'].strip('-')
+                names += ' '.join([l for l in n.split() if not (l.endswith(')') or l.startswith('('))])
+            if args:
+                names +=', '
+                for itm_id in args:
+                    if itm_id in data.items:
+                        n = data.items[itm_id]['name'].strip('-')
+                        names += ' '.join([l for l in n.split() if not (l.endswith(')') or l.startswith('('))])
+                        names += ', '
+                names = names[:-2]
+            return names
+
+        def give_clothes_by_tag(tag):
+            '''Give all clothes that have the given tag'''
+            for itm_id, itm_data in dict(data.items).items():
+                if tag in itm_data['tags'] and itm_id not in inventory:
+                    inventory[itm_id] = ''
+
+        def count_clothes_by_tag(tag, eqquiped_only=False):
+            ''' Returns the number of items the player has with the given tag
+                if eqquiped_only is True, it checks only equipped items.
+            '''
+            num = 0
+            for item_id, slot in inventory.items():
+                if item_id in data.items:
+                    if tag in data.items[item_id]['tags']:
+                        if eqquiped_only and not slot:
+                            pass
+                        else:
+                            num+=1
+            return num
+
+        def has_clothes_by_tag(tag, eqquiped_only=False):
+            ''' Returns True if the player has any items with the given tag
+                if eqquiped_only is True, it checks only equipped items.
+            '''
+            for item_id, slot in inventory.items():
+                if item_id in data.items:
+                    if tag in data.items[item_id]['tags']:
+                        if eqquiped_only and not slot:
+                            pass
+                        else:
+                            return True
+            return False
+
+        def _buy_item(event):
+            '''Fired when PC buys new clothing,
+            the item id is embedded in the button/event id
+            '''
+            button_id = event.target.id
+            item_id = button_id.removeprefix('buy_')
+            cost = int(data.items[item_id]['value'])
+            if save.last_shop_discount != '':
+                cost =  int(save.last_shop_discount *cost)
+
+            save.add_flag('last_shopping_cart', item_id)
+
+            # update money
+            save.money = int(save.money) - cost
+            doc['wear_money'].textContent = '$ '+str(save.money)
+            _restart_anim('wear_money', 'blink_red')
+            #doc['wear_money'].scrollIntoView()
+            # add the item to the inventory
+            inventory[item_id] = ''
+            # remove button from sell list
+            doc[button_id].remove()
+            # add button to buy list
+            if save.last_shop_discount != '':                               
+                txt = f"{data.items[item_id]['name']} ${int(data.items[item_id]['value']*save.last_shop_discount)}"
+            else:
+                txt = '{name} ${value}'.format(**data.items[item_id])
+            new_item =html.BUTTON(txt,
+                                  id='sell_'+item_id,
+                                  type='button',
+                                  Class='shop_button')
+            new_item.bind('click', _sell_item)
+            doc['shop_sell'].appendChild(new_item)
+            # add to dropdown
+            itm_slot = data.items[item_id]['slot']
+            itm_name = data.items[item_id]['name']
+            dropdown = html.OPTION(itm_name, value=item_id, id='wear_'+item_id)
+            doc['cloths_'+itm_slot].appendChild(dropdown)
+            # put it on
+            set_clothes(item_id)
+
+        def _sell_item(event):
+            '''Fired when PC sells clothing,
+            the item id is embedded in the button/event id
+            '''
+            button_id = event.target.id
+            item_id = button_id.removeprefix('sell_')
+            cost = int(data.items[item_id]['value'])
+            # update money
+            if save.last_shop_discount != '':
+                cost = int(cost*save.last_shop_discount)
+            save.money = int(save.money) + cost
+            doc['wear_money'].textContent = '$ '+str(save.money)
+            _restart_anim('wear_money', 'blink_green')
+            # remove button from buy list
+            doc[button_id].remove()
+            # add button to buy list
+            if save.last_shop_discount != '':
+                 txt = f"{data.items[item_id]['name']} ${int(data.items[item_id]['value']*save.last_shop_discount)}"
+            else:
+                txt = '{name} ${value}'.format(**data.items[item_id])
+            new_item =html.BUTTON(txt,
+                                  id='buy_'+item_id,
+                                  type='button',
+                                  Class='shop_button')
+            new_item.bind('click', _buy_item)
+            doc['shop_buy'].appendChild(new_item)
+            # remove from dropdown
+            doc["wear_"+item_id].remove()
+            # remove from avatar if equipped
+            if inventory[item_id] not in ('', 0, '0'):
+                slot = data.items[item_id]['slot']
+                _show('pc_img_'+slot, False)
+                # lets look for a option named '- Nothing -'
+                dropdown = doc['cloths_'+slot]
+                found_nude = False
+                for option in dropdown.options:
+                    if option.textContent  == '- Nothing -':
+                        option.selected = 'selected'
+                        found_nude = True
+                        inventory[option.value] = slot
+                if not found_nude: # add a temp empty option
+                    dropdown = html.OPTION('', value='empty', selected='selected', disabled='disabled')
+                    doc['cloths_'+slot].appendChild(dropdown)
+            # and remove from inventory
+            inventory.remove(item_id)
+            _update_clothes_stats(False)
+
+        def _update_clothing(tag_set=None, limited=False):
+            ''' Update the clothing selection and draw the current clothes on the avatar'''
+            data.glob.last_cloth_update_limited = int(limited)
+            if tag_set:
+                tag_set = set(tag_set)
+                data.glob.last_cloth_update_tag_set = list(tag_set)
+            else:
+                data.glob.last_cloth_update_tag_set = None
+
+            for inv_slot in doc['inventory_slots'].children:
+                inv_slot.clear()
+
+            # if for some reason there are no items in the inventory
+            # when the game starts correctly the inventory should at least have the 'nude clothes'
+            if inventory.is_empty():
+                filled_slots = []
+                for itm_id, itm_data in dict(data.items).items():
+                    if 'nude' in itm_data['tags']:
+                        s = data.items[itm_id]['slot']
+                        if s not in filled_slots:
+                            inventory[itm_id] = s
+                            filled_slots.append(s)
+                        else:
+                            inventory[itm_id] = ''
+            # the limited list always needs to have the default nude 'clothes'
+            # without that it may be impossible to equip anything
+            limited_list = ['commando', 'topless', 'bottomless', 'no_bra', 'no_stockings', 'no_accessory']
+            if limited:
+                current_clothes = save.get_list('_current_clothes')
+                if not current_clothes:
+                    limited = False
+                limited_list += current_clothes
+            new_dropdowns = {}
+            for item_id, slot in inventory.items():
+                if item_id in data.items:
+                    if limited:
+                        if item_id not in limited_list:
+                            continue
+                    if tag_set:
+                        if not tag_set & set(data.items[item_id]['tags']):
+                            continue
+                    #update dropdown
+                    itm_slot = data.items[item_id]['slot']
+                    itm_name = data.items[item_id]['name']+  _get_slut_delta_str(item_id)
+                    dropdown = html.OPTION(itm_name, value=item_id, id='wear_'+item_id)
+                    if slot:
+                        dropdown.selected = 'selected'
+                        #draw on avatar
+                        if data.items[item_id]['img']:
+                            doc['pc_img_'+slot].srcset = data.items[item_id]['img']
+                            _show('pc_img_'+slot)
+                        else:
+                            _show('pc_img_'+slot, False)
+                    #doc["cloths_"+itm_slot].appendChild(dropdown)
+                    if "cloths_"+itm_slot in new_dropdowns:
+                        new_dropdowns["cloths_"+itm_slot].append((itm_name, dropdown))
+                    else:
+                        new_dropdowns["cloths_"+itm_slot]=[(itm_name, dropdown)]
+                else:
+                    show_error('Unknown item: '+item_id)
+            # add to dropdown, but sorted by name
+            for slot_name in new_dropdowns:
+                for item_name, dropdown_item in sorted(new_dropdowns[slot_name], key=lambda x: x[0]):
+                    doc[slot_name].appendChild(dropdown_item)
+
+        def strip_nude():
+            '''Takes of all the clothes '''
+            set_clothes('commando','topless','bottomless','no_bra','no_stockings','no_accessory')
+
+        def set_clothes(clothes, *args, **kwargs):
+            '''Gives and equips all the clothes. Additional clothes can be passed
+                as positional arguments or clothes can be a list
+                If multiple items in the list share the same slots the last one will be used.
+                No items are striped before updating the equipment.
+                Also shows the PC avatar/paperdoll if show_pc (key-word-argument) is True
+            '''
+            # Brython being 'funny', stupid fix :|
+            clothes_list = []
+            if type(clothes) == list:
+                clothes_list += clothes
+            elif type(clothes) == tuple:
+                clothes_list += list(clothes)
+            else:
+                clothes_list=[clothes]
+            if args:
+                if type(args) == list:
+                    clothes_list += args
+                elif type(args) == tuple:
+                    clothes_list += list(args)
+                else:
+                    clothes_list += [args]
+
+            show_pc = True
+            if 'show_pc' in kwargs:
+                show_pc = kwargs['show_pc']
+
+            for clothes_name in clothes_list:
+                if clothes_name in data.items:
+                    itm_slot = data.items[clothes_name]['slot']
+                    itm_img = data.items[clothes_name]['img']
+                    # if it's not currently equipped
+                    if inventory[clothes_name] in ('', 0, '0'):
+                        # check all equipped items and unequip the one in itm_slot
+                        uneqip = []
+                        for name, slot in inventory.items():
+                            if slot == itm_slot:
+                                uneqip.append(name)
+                        for n in uneqip:
+                            inventory[n] = ''
+                        # put the new clothes in the slot
+                        inventory[clothes_name] = itm_slot
+                        #update the dropdown cloths list
+                        if 'wear_'+clothes_name in doc:
+                            doc['wear_'+clothes_name].selected = True
+                        # show the image
+                        if itm_img:
+                            doc['pc_img_'+itm_slot].srcset = itm_img
+                            if show_pc:
+                                _show('pc_img_'+itm_slot)
+                        else:
+                            # if the clothing has no image, hide the clothing image
+                            _show('pc_img_'+itm_slot, False)
+                else:
+                    show_error(f'Unknown item: {clothes_name}')
+            _update_clothes_stats(False)
+
+        def _on_shop_filter(event):
+            ''' Filter the items displayed in shop
+            '''
+            dropdown = event.target
+            num = dropdown.selectedIndex
+            if num > -1:
+                filter_name = dropdown.options[num].value
+            else:
+                return
+            shop_id = save.last_shop_id
+            tag_set = None
+            slots = None
+            # print(filter_name)
+            if filter_name == 'top':
+                tag_set = {'clothes_top'}
+                slots = ['top']
+            elif filter_name == 'bottom':
+                tag_set = {'clothes_bottom'}
+                slots = ['bottom']
+            elif filter_name == 'underwear':
+                tag_set = {'bra', 'panties', 'stockings'}
+                slots = ['underwear_top', 'underwear_bottom']
+            elif filter_name == 'accessories':
+                tag_set = {'stockings'}
+                slots = ['accessory']
+            elif filter_name == 'school':
+                tag_set = {'school'}
+            elif filter_name == 'sport':
+                tag_set = {'sport'}
+            elif filter_name == 'swimsuit':
+                tag_set = {'swimsuit'}
+            elif filter_name =='maid':
+                tag_set = {'maid'}
+            elif filter_name =='party':
+                tag_set = {'party'}
+            elif filter_name =='elegant':
+                tag_set = {'elegant'}
+            elif filter_name =='slutty':
+                tag_set = {'partial_cover_boobs', 'partial_cover_pussy','bdsm'}
+            elif filter_name =='non_slutty':
+                tag_set = {'partial_cover_boobs', 'partial_cover_pussy','bdsm'}
+            elif filter_name == 'other':
+                tag_set = {'clothes_top', 'clothes_bottom','bra', 'panties', 'stockings', 'accessories','school','sport'}
+
+            doc['shop_buy'].clear()
+            #print(tag_set, slots, shop_id)
+
+            item_buttons = {}
+
+            for itm_id in data.shops[shop_id]:
+                if itm_id not in inventory:
+                    if filter_name == 'other':
+                        if tag_set & set(data.items[itm_id]['tags']):
+                            continue
+                    elif filter_name == 'slutty':
+                        if not (tag_set & set(data.items[itm_id]['tags']) or data.items[itm_id]['slutty']>=2):
+                            continue
+                    elif filter_name == 'non_slutty':
+                        if tag_set & set(data.items[itm_id]['tags']) or data.items[itm_id]['slutty']>=2:
+                            continue
+                    else:
+                        if tag_set and slots:
+                            if not (tag_set & set(data.items[itm_id]['tags']) or data.items[itm_id]['slot'] in slots):
+                                continue
+                        else:
+                            if tag_set:
+                                if not tag_set & set(data.items[itm_id]['tags']):
+                                    continue
+                            if slots:
+                                if data.items[itm_id]['slot'] not in slots:
+                                    continue
+                    txt = '{name} ${value}'.format(**data.items[itm_id])
+                    new_item =html.BUTTON(txt,
+                                          id='buy_'+itm_id,
+                                          type='button',
+                                          Class='shop_button')
+                    new_item.bind('click', _buy_item)
+                    item_buttons[txt]= new_item
+                    #doc['shop_buy'].appendChild(new_item)
+            for name, button in sorted(item_buttons.items()):
+                doc['shop_buy'].appendChild(button)
+
+        def change_clothes(tag_set=None, enforce_stats=1, limited=False, loopback=False):
+            ''' Alias for shop with no items'''
+            shop(shop_id=None, tag_set=tag_set, enforce_stats=enforce_stats, buyback=False, limited=limited, loopback=loopback)
+
+        def shop(shop_id=None, tag_set=None, enforce_stats=1, buyback=False, discount=None, limited=False, loopback=False):
+            ''' Show the shop/wardrobe screen.
+                shop_id is the name of the shop (see data/shops.txt)
+                if tag_set is not None, only items that have the tag(s) will be shown
+                if enforce_stats is 1/True, the player will not be able to exit the shop
+                while the clothing stats are below the current threshold
+                if buyback is True, the PC can sell all her clothes to the shop
+                discount - all shop prices are multiplied by 'discount' (rounded down)
+                if limited is True, the player can only select the clothes saved as
+                '_current_clothes' (at exiting a shop/change_clothes or via update_current_clothes_list())
+                if loopback is True the game will return to the plot node shown before the shop opened (used for cheats/debug)
+             '''
+            if shop_id and shop_id not in data.shops:
+                _move_to_next()
+            if tag_set:
+                tag_set = set(tag_set)
+                tag_set.add('nude')
+            update_stats()
+            doc['choice'].clear()
+            _show_txt(False)
+            _show('rollback', False)
+            _show('questlog', False)
+            show_pc(True)
+            _show('cloths')
+            doc['wear_money'].textContent = '$ '+str(save.money)
+            doc['wear_money'].style['animation-name'] = 'no_anim'
+            #save the enforcement rules
+            save.enforce_stats = int(enforce_stats)
+            save.last_shop_limited = int(limited)
+            save.last_shop_loopback = int(loopback)
+            _update_clothing(tag_set, limited)
+            if shop_id is None:
+                _show(['buy_grid', 'sell_grid'], False)
+                _show('outfit_grid', True)
+                _update_outfits(tag_set, limited)
+            else:
+                _show('outfit_grid', False)
+                #clear shop filter
+                doc['shop_filter_all'].selected = True
+                save.last_shop_id = shop_id
+                if discount is None:
+                    discount =''
+                save.last_shop_discount = discount
+                
+                _show(['buy_grid', 'sell_grid'])
+                doc['shop_buy'].clear()
+                doc['shop_sell'].clear()
+
+                #print('discount: ', discount)
+
+                if 'last_shopping_cart' in save:
+                    for item_id in save.get_flags('last_shopping_cart'):
+                        if discount != '':
+                            txt = f"{data.items[item_id]['name']} ${int(data.items[item_id]['value']*discount)}"
+                        else:
+                            txt = '{name} ${value}'.format(**data.items[item_id])
+                        new_item =html.BUTTON(txt,
+                                              id='sell_'+item_id,
+                                              type='button',
+                                              Class='shop_button')
+                        new_item.bind('click', _sell_item)
+                        doc['shop_sell'].appendChild(new_item)
+                
+                for itm_id in data.shops[shop_id]:
+                    if itm_id not in inventory:
+                        if tag_set:
+                            if not tag_set & set(data.items[itm_id]['tags']):
+                                continue
+                        if discount != '':
+                            txt = f"{data.items[itm_id]['name']} ${int(data.items[itm_id]['value']*discount)}"
+                        else:
+                            txt = '{name} ${value}'.format(**data.items[itm_id])
+                        new_item =html.BUTTON(txt,
+                                              id='buy_'+itm_id,
+                                              type='button',
+                                              Class='shop_button')
+                        new_item.bind('click', _buy_item)
+                        doc['shop_buy'].appendChild(new_item)
+            if not enforce_stats:
+                doc['wear_slut'].textContent = str(save.current_slut)+'/'+str(save.max_slut)+'(not enforced)'
+
+        
+        def update_current_clothes_list():
+            ''' Update the current clothes list'''
+            current_clothes = []
+            for item_id, item_slot in inventory.items():
+                if item_slot:
+                    current_clothes.append(item_id)
+            save.set_list('_current_clothes', current_clothes)
+
+        def remember_clothes():
+            ''' Update the current clothes list'''
+            current_clothes = []
+            for item_id, item_slot in inventory.items():
+                if item_slot:
+                    current_clothes.append(item_id)
+            save.set_list('_current_clothes', current_clothes)
+            
+        def restore_clothes():
+            '''Restore previously saved clothes'''
+            set_clothes(save.get_list('_current_clothes'))
+
+        @bind(doc['shop_close'], 'click')
+        def _close_shop(event=None):
+            '''Close the current shop, jump back to the plot-line'''
+            # Check stats before closing!!
+            if int(save.current_slut) > int(save.max_slut) and save.enforce_stats:
+                _restart_anim('wear_slut', 'blink_red')
+                #doc['wear_slut'].scrollIntoView()
+                return
+            if int(save.money) < 0:
+                _restart_anim('wear_money', 'blink_red')
+                return
+            #else:
+            save.remove('last_shopping_cart')
+            _show(['buy_grid', 'sell_grid', 'cloths','outfit_grid'], False)
+            show_pc(False)
+            current_clothes = []
+            for item_id, item_slot in inventory.items():
+                if item_slot:
+                    current_clothes.append(item_id)
+            if not save.last_shop_limited:
+                save.set_list('_current_clothes', current_clothes)
+            # show rollback
+            if not rollback_save.is_empty():
+                _show('rollback')
+            # show questlog
+            if not quests.is_empty():
+                _show('questlog')
+            history_log_txt = '[ Changed clothes to: '
+            for item_id, slot in inventory.items():
+                if slot:
+                    name = data.items[item_id]['name']
+                    if name != '- Nothing -':
+                        history_log_txt+= name+', '
+            history_log_txt += str(save.current_slut)+' ]'
+            doc['history_txt'].textContent += history_log_txt
+
+            # loopback shop - do not use in plot nodes!
+            if save.last_shop_loopback:
+                save.remove('last_shop_loopback')
+                move_to(save.current_plot_node)
+                return
+            save.remove('last_shop_loopback')
+
+            # progress to next node
+            _move_to_next()
+
+        def is_exposed(test_expo, logic='any', current_expo=None):
+            ''' Returns True/False depending on current clothes and the given test_expo.
+                Use the values from the EXPO eg.:
+                test_expo=EXPO.PUSSY+EXPO.PART_BOOBS
+                if logic == 'any': returns True if at least one bit matches
+                if logic == 'all': returns True if all bit match
+                if logic == 'some': uses RNG, returns True more often if more bits match
+            '''
+            if current_expo is None:
+                current_expo = get_exposure()
+            match_count = bin(current_expo & test_expo).count('1')
+            test_count = bin(test_expo).count('1')
+            if logic == 'all':
+                return match_count == test_count
+            if logic == 'any':
+                return match_count > 0
+            if logic =='some':
+                return chance(match_count/test_count)
+            return False
+
+        def get_exposure(tags=None):
+            ''' Returns a int (bitmask) used for checking nudity'''
+            exposure = 0
+            if tags is None:
+                tags = set()
+                for name, slot in inventory.items():
+                    if slot:
+                        tags |= set(data.items[name]['tags'])
+            if not tags:
+                return EXPO.NUDE
+            # check the tags for state of nudity
+            if 'partial_cover_boobs' in tags and 'cover_boobs' not in tags:
+                exposure|=EXPO.PART_BOOBS
+            if 'partial_cover_boobs' not in tags and 'cover_boobs' not in tags:
+                exposure|=EXPO.BOOBS
+
+            if 'partial_cover_pussy' in tags and 'cover_pussy' not in tags:
+                exposure|=EXPO.PART_PUSSY
+            if 'partial_cover_pussy' not in tags and 'cover_pussy' not in tags:
+                exposure|=EXPO.PUSSY
+
+            if 'clothes_top'  not in tags:
+                exposure|=EXPO.TOPLESS
+            elif 'bra' not in tags and 'opaque' not in tags:
+                 exposure|=EXPO.POKIES
+            if 'clothes_bottom' not in tags:
+               exposure|=EXPO.BOTTOMLESS
+
+            return exposure
+
+        def match_clothes(test_set):
+            ''' Returns the % match between the current clothes and the test_set
+                as a float in 0.0, 1.0 range.
+                Note: test_set must be a set!
+            '''
+            current_clothes_set = set()
+            for name, slot in inventory.items():
+                if slot:
+                    current_clothes_set.add(name)
+            if test_set <= current_clothes_set:
+                return 1.0
+            #else:
+            return  len(test_set &  current_clothes_set) / len(test_set)
+
+        def check_uniform(slots, tags, current_items=None):
+            ''' Check if the clothes_set is a valid uniform.
+                A uniform is valid if all items in 'slots' have
+                at least one of the tags in the 'tags' set
+            '''
+            tags = set(tags)
+            if current_items is None:
+                current_items = inventory
+            for itm_id, slot in current_items.items():
+                if slot in slots and itm_id in data.items:
+                    if not set(data.items[itm_id]['tags']) & tags:
+                        return False
+            return True
+
+        def get_underwear():
+            '''Returns a list of currently equiped underwear types, one of:
+                ['bra', 'panties']
+                ['bra']
+                ['panties']
+                []
+            '''
+            r = list({'bra', 'panties'} & get_equipped_tagset())
+            if r == ['panties', 'bra']:
+                r = ['bra', 'panties']
+            return r
+            
+        def has_equipped_tags(*args):
+            ''' Checks if PC has clothing with all the tags in the tagset equipped'''
+            return set(args) < get_equipped_tagset()
+            
+        def get_equipped_tagset():
+            ''' Returns a set with the tags of the currently equipped clothes
+            '''
+            tags = set()
+            for name, slot in inventory.items():
+                if slot:
+                    tags |= set(data.items[name]['tags'])
+            return tags
+
+        def _get_slut_delta_str(item_name):
+            ''' Returns string representing the sluttiness value of an outfit,
+                that is composed of what the PC is currently wearing + the 'item_name' item
+            '''
+            if 'current_slut' not in save:
+                return ''
+            if item_name in inventory:
+                if inventory[item_name] !='':
+                    return ''
+            if item_name in data.items:
+                target_slot = data.items[item_name]['slot']
+                clothes_list = [item_name]
+                # check what we have on currently minus the item in the target_slot
+                for item_id, item_slot in inventory.items():
+                    if item_slot:
+                        if item_slot != target_slot:
+                            clothes_list.append(item_id)
+
+                slut_stat, uniform =  get_clothes_stats(clothes_list)
+                return f'[{slut_stat}]'
+            else:
+                return ' ?'
+
+        def get_clothes_stats(clothes_list):
+            ''' Returns a tuple that is the slutiness value of the clothes in the clothes_list
+                and the name of the uniform type
+                eg. (7, 'School Uniform')
+            '''
+            uniform = ''
+            tags = []
+            slut_stat = 0
+            for name in clothes_list:
+                tags+=data.items[name]['tags']
+                slut_stat += data.items[name]['slutty']
+            tag_set = set(tags)
+            expo = get_exposure(tag_set)
+            slut_stat += sum( (int(i)*j for i,j in zip(format(expo, '06b'), EXPO.SLUT_MULTI)) )
+
+            if {'swim_top', 'swim_bottom'} < tag_set:
+                slut_stat = min(slut_stat, clamp(((slut_stat+3)*2)//3, 1, 19)) #aaargh!!!
+                uniform = 'Swimwear'
+            elif {'sport_top', 'sport_bottom'} < tag_set:
+                slut_stat = clamp(slut_stat-4, 1, 12)
+                uniform = 'Sport Outfit'
+
+            if {'cheer_top', 'cheer_bottom'} < tag_set:
+                uniform = 'Cheerleader Outfit'
+            if {'maid_top', 'maid_bottom'} < tag_set:
+                uniform = 'Maid Uniform'
+            if {'school_top', 'school_bottom'} < tag_set:
+                uniform = 'School Uniform'
+
+            if 'elegant' in tag_set:
+                if uniform:
+                    uniform +='(elegant)'
+                else:
+                    uniform = 'Elegant Outfit'
+
+            if tags.count('party') > 2:
+                if uniform:
+                    if uniform.endswith('(elegant)'):
+                        uniform = uniform[:-1]+'/party)'
+                    else:
+                        uniform +='(party)'
+                else:
+                    uniform = 'Party Outfit'
+            return slut_stat, uniform
+
+        def _update_clothes_stats(blink=True):
+            '''Update the stats and tags for the currently worn clothes'''
+
+            clothes_list = []
+            for name, slot in inventory.items():
+                if slot:
+                    clothes_list.append(name)
+            slut_stat, uniform =  get_clothes_stats(clothes_list)
+
+            # check for pokies
+            if is_exposed(EXPO.POKIES):
+                doc["pc_img_hair"].srcset = 'img/pc/hair_hands_bb.png'
+            else:
+                doc["pc_img_hair"].srcset = 'img/pc/hair_hands.png'
+
+            doc['wear_uniform'].textContent = uniform
+
+            #check slut stat!
+            save.current_slut = int(slut_stat)
+            max_slut = int(save.max_slut)
+            doc['wear_slut'].textContent = str(slut_stat)+'/'+str(max_slut)
+            if blink:
+                if save['enforce_stats'] == 1:
+                    if slut_stat > max_slut:
+                        _restart_anim('wear_slut', 'blink_red')
+                    else:
+                        _restart_anim('wear_slut', 'blink_green')
+                else:
+                    doc['wear_slut'].textContent = str(slut_stat)+'/'+str(max_slut)+'(not enforced)'
+                    _restart_anim('wear_slut', 'blink_green')
+
+
+        def _on_equip(event):
+            '''Fired when the pc changes clothing
+            '''
+            dropdown = event.target
+            num = dropdown.selectedIndex
+            if num > -1:
+                clothes_name = dropdown.options[num].value
+            else:
+                return
+            # remove the empty options
+            for option in dropdown.options:
+                if option.value == 'empty':
+                    option.remove()
+            if clothes_name in data.items:
+                itm_slot = data.items[clothes_name]['slot']
+                itm_img = data.items[clothes_name]['img']
+                # if it's not currently equipped
+                if inventory[clothes_name] in ('', 0, '0', False, 'False', 'false'):
+                    # check all equipped items and unequip the one in itm_slot
+                    uneqip = []
+                    for name, slot in inventory.items():
+                        if slot == itm_slot:
+                            uneqip.append(name)
+                    for n in uneqip:
+                        inventory[n] = ''
+                    # put the new clothes in the slot
+                    inventory[clothes_name] = itm_slot
+                    # show the image
+                    if itm_img:
+                        doc['pc_img_'+itm_slot].srcset = itm_img
+                        _show('pc_img_'+itm_slot)
+                    else:
+                        # if the clothing has no image, hide the clothing image
+                        _show('pc_img_'+itm_slot, False)
+            else:
+                show_error(f'Unknown item equipped: {clothes_name}')
+            _update_clothes_stats()
+            if 'last_cloth_update_tag_set' in data.glob and 'last_cloth_update_limited' in data.glob:
+                _update_clothing(data.glob.last_cloth_update_tag_set, data.glob.last_cloth_update_limited)
+            else:
+                _update_clothing()
+
+        def _update_outfits(tag_set=None, limited=False):
+            ''' Update the list of known outfits
+            '''
+            doc['outfits'].clear()
+            outfit_names = []
+            for name, value in save.items():
+                if name.startswith('_outfit_'):
+                    if tag_set is None:
+                        outfit_names.append(name.removeprefix('_outfit_'))
+                    else:
+                        outfit_has_tags = True
+                        for itm_id in save.get_list(name):
+                            if not tag_set & set(data.items[itm_id]['tags']):
+                                outfit_has_tags = False
+                                break
+                        if outfit_has_tags:
+                            outfit_names.append(name.removeprefix('_outfit_'))
+            #add hardcoded outfits
+            # nude
+            nude_btn = html.BUTTON('Nude', type="button", Class="outfit_button_wide")
+            nude_btn.bind('click', lambda l: strip_nude())
+            doc['outfits'].appendChild(nude_btn)
+            #last outfit
+            last_worn = save.get_list('_current_clothes')
+            if last_worn:
+                # check if the outfit against tag_set
+                use_last = True
+                if tag_set:
+                    for last_itm_id in last_worn:
+                        if last_itm_id not in inventory:
+                            use_last = False
+                            break;
+                        if not tag_set & set(data.items[last_itm_id]['tags']):
+                            use_last = False
+                            break;
+                if use_last:
+                    last_btn = html.BUTTON('Last Worn', type="button", Class="outfit_button_wide")
+                    last_btn.bind('click', lambda l: set_clothes(last_worn))
+                    doc['outfits'].appendChild(last_btn)
+
+            #add custom outfits
+            if not limited:
+                for outfit_name in outfit_names:
+                    btn = html.BUTTON(outfit_name, id=outfit_name, type="button", Class="outfit_button")
+                    btn.bind('click', _use_outfit)
+                    btn2 = html.BUTTON(chr(int('f2ed', 16)), id='del_'+outfit_name, type="button", Class="del_outfit_button")
+                    btn2.bind('click', _del_outfit)
+                    doc['outfits'].appendChild(btn)
+                    doc['outfits'].appendChild(btn2)
+
+        def _del_outfit(event):
+            ''' Remove the outfit encoded as event.target.id
+            '''
+            name = event.target.id
+            name = name.removeprefix('del_')
+            save.remove('_outfit_'+name)
+            _update_outfits()
+
+        def _use_outfit(event):
+            ''' Change the current clothes to the outfit encoded as event.target.id
+            '''
+            name = event.target.id
+            items = save.get_list('_outfit_'+name)
+            final_items = []
+            if items:
+                for itm_name in items:
+                    if itm_name in inventory:
+                        final_items.append(itm_name)
+                set_clothes(final_items)
+
+        def _add_outfit(name, items=None):
+            ''' Add an outfit to the list of known outfits
+                if items is None the currently used items will be saved
+            '''
+            if name:
+                if items is None:
+                    items = []
+                    for itm_name, slot in inventory.items():
+                        if slot:
+                            items.append(itm_name)
+                save.set_list('_outfit_'+name, items)
+                _update_outfits()
+
+        ################################################################
+        ## Credits
+        ################################################################
+        def start_credits():
+            '''Fetches the credits txt and starts the credits animation
+                by default credits are in data/supporters.txt (var credits = ...)
+            '''
+            data.glob.credits_text = list(data.credits)
+            data.glob.credits_text.reverse()
+            _show('credits')
+            _next_credit()
+
+        def _next_credit(event=None):
+            ''' Shows the next line of credits
+                if there are no more lines of credits - summons Cthulu
+            '''
+            if doc['credits'].style.display == 'none':
+                return
+            if 'credits_text' in data.glob:
+                if data.glob.credits_text:
+                    doc['credits'].textContent = data.glob.credits_text.pop()
+                    _restart_anim('credits', 'fade_in_out')
+                else:
+                    splash(rgba=(240, 240, 255, 1.0), time=700)
+                    _show_new_img('img/common/end.webp')
+
+        def end_credits():
+            '''End the credits animation
+                Note: The anim is now run by css, so this just hides an element
+            '''
+            _show('credits', False)
+
+        ################################################################
+        ## In-line text styling helpers
+        ################################################################
+        def S(txt, css):
+            '''Wrapper for creating in-line styling'''
+            return f'<span style="{css}">{txt}</span>'
+
+        def RED(txt):
+            '''Wrapper for creating in-line styling -color red'''
+            return f'<span style="color: red">{txt}</span>'
+
+        def B(txt):
+            '''Wrapper for creating in-line styling - bold'''
+            return f'<span style="font-weight: bold;">{txt}</span>'
+
+        def I(txt):
+            '''Wrapper for creating in-line styling - italic'''
+            return f'<span style="font-style: italic;">{txt}</span>'
+
+        def Rus(txt):
+            '''Wrapper for creating in-line styling - cyrillic font'''
+            return f'<span style="font-family: kyrilla; font-size: 92%;">{txt}</span>'
+
+
+        ################################################################
+        ## Core functions
+        ################################################################
+        def _run_modal_cmd(cmd):
+            ''' Run the command bound to the ok button of a modal and hide the modal'''
+            try:
+                exec(cmd)
+            except Exception as e:
+                print(f'Error running modal cmd: {e}')
+
+            _show('modal_box', False)
+
+        def _show_modal(header_txt, body_elements, ok_cmd, cancel_cmd=None, ok_txt='OK', cancel_txt='CANCEL'):
+            ''' Show a modal dialog box with ok/cancel buttons header_txt and body_elements
+                ok_cmd is executed when the player clicks on 'ok'
+            '''
+            if ok_cmd:
+                doc['modal_ok'].unbind('click')
+                doc['modal_ok'].bind('click', lambda ev: _run_modal_cmd(ok_cmd))
+                _show('modal_ok')
+                doc['modal_cancel'].textContent = cancel_txt
+                doc['modal_ok'].textContent = ok_txt
+                if cancel_cmd:
+                    doc['modal_cancel'].unbind('click')
+                    doc['modal_cancel'].bind('click', lambda ev: _run_modal_cmd(cancel_cmd))
+                else:
+                    doc['modal_cancel'].unbind('click')
+                    doc['modal_cancel'].bind('click', lambda ev: _show('modal_box', False))
+            else:
+                _show('modal_ok', False)
+                doc['modal_cancel'].textContent = ok_txt
+
+            doc['modal_header'].textContent = header_txt
+            doc['modal_body'].clear()
+            for element in body_elements:
+                doc['modal_body'].appendChild(element)
+            _show('modal_box')
+
+        def _show_modal_input(text, default_value, ok_cmd):
+            ''' Show a modal dialog box with ok/cancel buttons and a text input box
+                ok_cmd is executed when the player clicks on 'ok'
+            '''
+            txt_input_box = html.INPUT(type='text',
+                                      id='modal_input',
+                                      placeholder=default_value,
+                                      size=25,
+                                      maxlength='25')
+            _show_modal(text, (txt_input_box,), ok_cmd)
+
+        def set_quest(quest_name, quest_text=None):
+            ''' Update the questlog setting the visible text to quest_text
+            '''
+            if quest_text:
+                quests[quest_name] = quest_text
+            else:
+                quests.remove(quest_name)
+            _update_questlog()
+
+        def _update_questlog(event=None):
+            doc['questlog_text'].clear()
+            for name, txt in quests.items():
+                quest_task = html.DIV(txt, Class='task')
+                doc['questlog_text'].appendChild(quest_task)
+            #doc['questlog_text'].appendChild(html.DIV('Send $$$ to game dev!', Class='task'))
+            _show('questlog')
+
+        def _toggle_txt(event=None):
+            ''' Show/hide the main text box if there is text in it,
+                also updates the menu button text appropriately
+            '''
+            if doc['txt'].textContent:
+                display = doc['main_txt'].style.display
+                if display == 'none' :
+                    _show('main_txt', True)
+                    _show('choice', True)
+                    _show('left_corner', True)
+                    _show('right_corner', True)
+                    _show('click_anywhere', False)
+                else:
+                    _show('main_txt', False)
+                    _show('choice', False)
+                    _show('left_corner', False)
+                    _show('right_corner', False)
+                    _show('click_anywhere', True)
+
+        def set_bodypart_img(bodypart, img_path):
+            ''' Change the image for a bodypart
+                img_path should be the relative path/url to the img
+            '''
+            save[bodypart] = img_path
+            doc[bodypart].srcset = img_path
+
+        def set_body_overlay(img_name=None, img_path='img/pc/'):
+            ''' Adds a overlay image on top of the pc image stack
+            '''
+            if img_name:
+                doc['pc_img_overlay'].srcset = img_path+img_name
+                _show('pc_img_overlay')
+            else:
+                doc['pc_img_overlay'].srcset = 'img/pc/_blank.png'
+                _show('pc_img_overlay', False)
+
+        def counter_inc(name):
+            '''Increment a persistent counter by 1.
+            The counter will only be increased once per in-game date/time
+            '''
+            current_time = str(save.time)
+            if not save.has_flag('_count_'+name, current_time):
+                save.add_flag('_count_'+name, current_time)
+
+        def counter_get(name):
+            ''' Get the value of a counter'''
+            return len(save.get_flags('_count_'+name))
+
+        def exec_once(cmd):
+            ''' Run a command once per game/visit-to-node
+            '''
+            current = data.glob._current
+            if not save.has_flag('_cmd_mem', current):
+                save.add_flag('_cmd_mem', current)
+                try:
+                    exec(cmd)
+                except Exception as e:
+                    show_error(f'Exec error: {cmd} : {e}')
+
+        def _on_keydown(event):
+            ''' Fired when player presses a key on the keyboard'''
+            #print(event.keyCode)
+            if doc.activeElement:
+                if doc.activeElement.tagName == 'INPUT':
+                    return
+            if event.keyCode == 104: # H key
+                _toggle_txt()
+                event.stopPropagation()
+            elif event.keyCode == 32: #space
+                _move_to_next(event)
+                event.stopPropagation()
+            elif 47<event.keyCode<58: # keys 1-0
+                key = event.keyCode - 48
+                if key == 0:
+                    key = 10
+                if 'choices' in data.glob:
+                    if len(data.glob.choices) >= key:
+                        move_to(data.glob.choices[key-1])
+                        event.stopPropagation()
+
+        def splash(rgba=None, mode='screen', backdrop_filter='none', anim='fade_out', time=1100):
+            ''' Show a overlay with the color, blend mode and filter using the given animation
+                Note: Firefox has no support for backdrop-filter!
+            '''
+            if rgba is None:
+                rgba = (255,230,241,0.8)
+            doc['overlay'].style.backgroundColor = 'rgba({0}, {1}, {2}, {3})'.format(*rgba)
+            doc['overlay'].style.mixBlendMode = mode
+            doc['overlay'].style.backdropFilter = backdrop_filter
+            doc['overlay'].style.animationDuration= str(time)+'ms';
+            _restart_anim('overlay', anim)
+
+        def svg_filter(filter_name='default'):
+            '''Set a filter on both pc and npc images
+               Note: Remember to reset the filter!!!'''
+            doc['pc_imgs'].style.filter='url(#filter_{})'.format(filter_name)
+            doc['npc_img'].style.filter='url(#filter_{})'.format(filter_name)
+            save.last_filter = filter_name
+
+        def overlay_img(img_url=None, img_class='overlay_blend_screen', clear=True):
+            ''' Adds an overlay image on top of the main image
+            '''
+            if clear or img_url is None:
+                doc['imgs_overlay'].clear()
+            if img_url:
+                img = html.IMG(srcset=img_url,
+                                alt='image',
+                                Class =img_class)
+                doc['imgs_overlay'].appendChild(img)
+
+
+        def replace_parallax_img(new_img_url, layer=0):
+            ''' Replace one (1) image in the parallax image stack,
+                without resetting the animation
+            '''
+            for num_layer, img  in enumerate(doc['imgs_aux'].children):
+                if num_layer == layer:
+                    img.srcset = new_img_url
+            img_list = save.get_list('last_parallax_imgs')
+            img_list[layer] = new_img_url
+            save.set_list('last_parallax_imgs', img_list)
+
+        def parallax_imgs(*args, **kwargs):
+            '''Add a set of images with scrolling effect,
+                img_list - image or is a list of images to display.
+                When multiple images are use they should be passed in back-to-front order,
+                that is the smallest, most far away image first and the biggest, closes image last.
+                scroll_dir - should be either 'y' (default) or 'x'
+                if scroll_dir='y' the image(s) will be scrolled from top to bottom
+                if scroll_dir='x' the image(s) will be scrolled from side to side
+            Note: This is the CSS implementation, it's very slow on some hardware
+            '''
+            # _show_new_img will also clear the old img in 'imgs_aux'
+            _show_new_img('img/gray.webp')
+
+            img_list=[]
+            if args:
+                if type(args[0]) == list or type(args[0]) == tuple:
+                    img_list = args[0]
+                else:
+                    img_list=[arg for arg in args if arg not in ('x', 'y')]
+
+            scroll_dir='y'
+            if 'x' in args:
+                scroll_dir='x'
+            if 'scroll_dir' in kwargs:
+                scroll_dir = kwargs['scroll_dir']
+
+            if img_list:
+                save.set_list('last_parallax_imgs', img_list)
+                save.last_parallax_dir = scroll_dir
+                for new_img in img_list:
+                    img = html.IMG(srcset=new_img,
+                            alt='image',
+                            Class ='overscroll_img_'+scroll_dir)
+                    doc['imgs_aux'].appendChild(img)
+
+        def _show_new_img(new_img_url, style_class='main_img'):
+            '''Shows a new image,
+            'new_img_url' is the path/url to the new image
+            'style_class' is the name of the css class
+            fading or other animations are done by css
+            this fires _del_old_img() with a delay'''
+            img = html.IMG(srcset=new_img_url,
+                            alt='main image',
+                            Class =style_class)
+
+            img.bind('animationend', _del_old_img)
+            doc['imgs'].appendChild(img)
+            doc['imgs_aux'].clear()
+            save.remove('last_parallax_imgs')
+            # tattos/piercing etc
+            img_name, img_ext = new_img_url.split('.')
+            for name in save.get_flags('bodymods'):
+                new_img_name = img_name+'_'+name+'.'+img_ext
+                img = html.IMG(srcset=new_img_name, alt='', Class ='main_img')
+                doc['imgs_aux'].appendChild(img)
+
+
+        def _del_old_img(event=None):
+            '''Removes bottom img '''
+            current_imgs = doc['imgs'].get(selector='IMG')
+            if len(current_imgs)>1:
+                try:
+                    current_imgs[0].remove()
+                except Exception as e:
+                    print(f'Warning: Could not remove img. {e}')
+
+        def _show_txt(txt=False):
+            ''' Updates the text in 'main_txt',
+            if txt is False/None the text box will be hidden
+            '''
+            if txt:
+                data.glob.override_speaker = None
+                if '{' in txt and '}' in txt:                    
+                    # split the txt into lines and treat them as f-strings
+                    lines = txt.splitlines()
+                    num_lines = len(lines)
+                    final_txt = ''
+                    for i, line in enumerate(lines):                        
+                        try:
+                            final_txt += eval('''f"{}"'''.format(line))
+                            #print('final_txt', final_txt)
+                        except SyntaxError:
+                            final_txt += line
+                        if i+1 < num_lines:
+                            final_txt+='\n'
+                    final_txt = final_txt.replace('`', "'")
+                else:
+                    final_txt = txt.replace('`', "'")
+                # if the first line ends with ':' use the ::first-line style
+                # else add an empty line
+                if final_txt:
+                    speaker = final_txt.splitlines()[0].strip()
+                    if not speaker.endswith(':'):
+                        final_txt='\n'+final_txt
+                        speaker = 'Default:'
+                else:
+                    speaker = 'Default:'
+                if data.glob.override_speaker:
+                    speaker = data.glob.override_speaker
+                doc['txt'].innerHTML = final_txt
+                _show('main_txt')
+                _restart_anim('main_txt', 'popin')
+                # tts
+                txt_to_speak = str(doc['txt'].textContent).removeprefix(speaker)
+                _speak(txt_to_speak, speaker)
+            else:
+                doc['txt'].textContent = ''
+                _show('main_txt', False)
+                _show('txt_arrow', False)
+                #tts
+                _speak('')
+
+        def _show_npc(npc_img):
+            '''Show or hide the npc image '''
+            if npc_img:
+                if '{' in npc_img:
+                    try:
+                        npc_img = eval('''f"{}"'''.format(npc_img))
+                    except Exception as e:
+                        show_error(f"NPC Error [{npc_img}]: {e} ")
+                        _show('npc_img', False)
+                        return                        
+                doc['npc_img'].srcset = npc_img
+                _show('npc_img', True)
+            else:
+                 _show('npc_img', False)
+
+        def num_pc_bodymods(mod_type='piercing'):
+            ''' Get the number of body modifications the PC currently has
+                mod_type can be 'piercing' or 'tattoo'
+            '''
+            num_bodymods = 0
+            if 'pc_img_'+mod_type+'_3' in save:
+                num_bodymods = 3
+            elif 'pc_img_'+mod_type+'_2' in save:
+                num_bodymods = 2
+            elif 'pc_img_'+mod_type+'_1' in save:
+                num_bodymods = 1
+            return num_bodymods
+
+        def add_pc_bodymod(name, img, mod_type='piercing'):
+            ''' Add a body modifications image
+                mod_type can be 'piercing' or 'tattoo'
+                This function will silently fail if PC has 3 or more bodymods of that type
+            '''
+            num_bodymods = num_pc_bodymods()
+            if num_pc_piercings < 3:
+                save['pc_img_'+mod_type+str(num_bodymods+1)] = img
+                save.add_flag('bodymods', name)
+
+        def show_pc(visible=True, face=None):
+            ''' Show the pc avatar image with the current clothing and face
+            '''
+            if visible:
+                # if face is None show the happy face
+                if face is not None:
+                    # Update: if the string 'scripted' is used, the avatar
+                    #         is kept as it is, probably set by an earlier command
+                    if face == 'scripted':
+                        return
+                    # if the face is something unknown use the last img
+                    # in other words don't change the img if it's unknown
+                    # the editor uses the string 'last' for this effect
+
+                    # face image sets can be overriden
+                    face_src =  'img/pc/face_'
+                    if 'face_src' in save:
+                        face_src = save['face_src']
+
+                    face_imgs ={
+                            'smile':face_src+'smile.png',
+                            'happy':face_src+'happy.png',
+                            'blush':face_src+'blush.png',
+                            'neutral':face_src+'neutral.png',
+                            'upset':face_src+'upset.png',
+                            'shock':face_src+'shock.png',}
+                    if face in face_imgs:
+                        doc['pc_img_face'].srcset = face_imgs[face]
+                else:
+                    doc['pc_img_face'].srcset = 'img/pc/face_happy.png'
+
+                # 'replaceable' body parts
+                bodyparts_names = ('pc_img_nude', 'pc_img_hair',
+                                    'pc_img_piercing_1', 'pc_img_piercing_2', 'pc_img_piercing_3',
+                                    'pc_img_tattoo_1', 'pc_img_tattoo_2', 'pc_img_tattoo_3'
+                                    )
+                for part in bodyparts_names:
+                    if part in save:
+                        doc[part].srcset = save[part]
+                        _show(part)
+
+                # overlay
+                if doc['pc_img_overlay'].srcset != 'img/pc/_blank.png':
+                    _show('pc_img_overlay', True)
+                else:
+                    _show('pc_img_overlay', False)
+                #wet skin
+                if save.pc_is_wet:
+                    _show('pc_img_wet', True)
+                else:
+                    _show('pc_img_wet', False)
+                #base body
+                _show(['pc_img_nude', 'pc_img_hair', 'pc_img_face'], True)
+
+                #update clothes
+                for item_id, slot in inventory.items():
+                    if item_id in data.items:
+                        if slot:
+                            img = data.items[item_id]['img']
+                            if img:
+                                doc['pc_img_'+slot].srcset = img
+                                _show('pc_img_'+slot)
+                            else:
+                                _show('pc_img_'+slot, False)
+                    else:
+                        show_error(f'Unknown item shown on PC: {item_id}')
+
+            else:
+                _show(['pc_img_nude','pc_img_accessory', 'pc_img_face','pc_img_hair',
+                      'pc_img_bottom','pc_img_top','pc_img_stockings',
+                      'pc_img_wet',
+                      'pc_img_underwear_bottom', 'pc_img_underwear_top', 'pc_img_overlay',
+                      'pc_img_piercing_1', 'pc_img_piercing_2', 'pc_img_piercing_3',
+                      'pc_img_tattoo_1', 'pc_img_tattoo_2', 'pc_img_tattoo_3'],
+                      False)
+
+        def update_stats():
+            ''' Updates the player stats
+                currently adds +1 max_slut for every 4 points of slut
+            '''
+            if save.slut:
+                d_mod = max(4, save.max_slut//3)
+                max_slut_bonus, leftover_slut = divmod(save.slut, d_mod)
+                save.max_slut += max_slut_bonus
+                save.slut = leftover_slut
+        
+        def _apply_url_param(key, value=None):
+            ''' Do something based on the parameters passed in via the url
+            '''
+            if key == 'zoom':
+                _set_zoom(value)
+            elif key == 'font_zoom':
+                _set_font_zoom(value)
+            elif key =='jump':
+                move_to(value)
+
+        ################################################################
+        ## Save loading utilities
+        ################################################################
+        def init_new_save():
+            ''' Resets all values in the save and inventory
+                to the initial values expected by the game.
+            '''            
+            # remove old data
+            inventory.clear()
+            save.clear()
+            inventory.clear()
+            save.clear()
+            quests.clear()
+            rollback_save.clear()
+            rollback_inventory.clear()
+            rollback_quests.clear()
+
+___TEMPLATE_NEW_SAVE_SCRIPT___
+
+        def _cleanup_save():
+            ''' Clean up save from all unused data
+            '''
+            if get_day() > 5:
+                flags_to_del ={'add_your_own_flags_here', 'and_here'}
+                save.remove_flag('__cmd_mem', flags_to_del)
+
+
+        def restore_last():
+            '''Restore the background npc and pc images to the last saved state '''
+            # update save to the current version
+            current_save_version = 4
+            if 'version' in save:
+                save_version = save.version
+            else:
+                save_version = 0
+            if save_version > current_save_version:
+                show_error('Warning: Loading a save from a newer version of the game!')
+            if save_version < current_save_version:
+                # add your game specific fixes here
+                pass
+                         
+            save.version =  current_save_version
+            # run cleanup
+            _cleanup_save()
+            # hide shop
+            _show(['buy_grid', 'sell_grid', 'cloths'], False)
+            # close settings
+            doc['settings'].open = False
+            # show rollback
+            if not rollback_save.is_empty():
+                _show('rollback')
+            # show questlog
+            if not quests.is_empty():
+                _show('questlog')
+            # close rollback
+            doc['rollback'].open = False
+
+            if 'last_music' in save:
+                if save.last_music:
+                    play_music(save.last_music)
+            if 'last_img' in save:
+                if save.last_img:
+                    _show_new_img(save.last_img)
+            if 'last_npc' in save:
+                if save.last_npc:
+                    _show_npc(save.last_npc)
+            if 'last_pc' in save:
+                if save.last_pc:
+                    show_pc(True, save.last_pc)
+            if 'last_filter' in save:
+                if save.last_filter:
+                    svg_filter(save.last_filter)
+            if 'last_parallax_imgs' in save:
+                parallax_imgs(save.get_list('last_parallax_imgs'), scroll_dir = save.last_parallax_dir)
+            overlay_img()
+            _update_clothes_stats(False)
+            _update_questlog()
+            _show('monetize', False)            
+            doc['history_txt'].textContent += '--- LOAD SAVE --- \n'
+
+        ################################################################
+        ## Game plot navigation
+        ################################################################
+        def _add_choice(label, condition, target, rollback=True):
+            ''' If eval(condition) is True:
+            Adds a new choice button with label text, pointing to target node.
+            Calling this function also hides the character sheet and button.
+            '''
+            if 'choices' not in data.glob:
+                data.glob.choices = []
+            try:
+                if eval(condition):
+                    new_choice = html.BUTTON(label,
+                                         type='button',
+                                         Class='choice_button')
+                    new_choice.bind('click', lambda ev: _on_choice_click(target, rollback, label))
+                    doc['choice'].appendChild(new_choice)
+                    data.glob.choices.append(target)
+            except Exception as e:
+                show_error(f'Choice condition error: (e)')
+
+        @bind(doc['rollback_button'], 'click')
+        def restore_rollback(event=None):
+            '''Restores the rollback from a save'''
+            doc['history_txt'].textContent += '--- ROLLBACK ---\n '
+            save.from_string(rollback_save.to_string())
+            inventory.from_string(rollback_inventory.to_string())
+            quests.from_string(rollback_quests.to_string())
+            move_to('load_last')
+
+        def _on_choice_click(target, rollback, label):
+            '''Executed when player clicks on a choice button  '''
+            doc['history_txt'].textContent += f'[ {label} ]\n'
+            doc['history_txt'].textContent += str(doc['txt'].textContent).strip()+'\n\n'
+            move_to(target, rollback)
+
+        def move_to(target, rollback=False):
+            ''' Moves to the target plot node
+                if rollback is True, a rollback point is saved
+            '''
+            if rollback:
+                rollback_save.from_string(save.to_string())
+                rollback_inventory.from_string(inventory.to_string())
+                rollback_quests.from_string(quests.to_string())
+                _show('rollback')
+            try:
+                progress_time(0)
+                #print('move_to: setup for: '+str(target)+' '+str(rollback))
+                data.glob.choices = []
+                if target in data.plot:
+                    #print('move_to: target in data')
+                    data.glob._current = target
+                    #no_save now is always(?) present and usually 0
+                    do_save = True
+                    if 'no_save' in data.plot[target]:
+                        if data.plot[target]['no_save'] == 1:
+                            do_save = False
+                            #print('move_to: no save flag set')
+
+                    #print('moving to: '+target)
+                    # hide/clear choices menu
+                    doc['choice'].clear()
+                    # check if it's an empty node,
+                    # data.plot[target] is a js Object so testing if it's empty is stupid
+                    is_empty = True
+                    for i in data.plot[target]:
+                        is_empty = False
+                        break
+                    if is_empty:
+                        show_error(f'Plot error: "{target}" is empty.')
+                    #print('move_to: empty check done')
+                    # run cmd
+                    if 'cmd' in data.plot[target]:
+                        for cmd in data.plot[target]['cmd']:
+                            #print('move_to: cmd: '+str(cmd))
+                            exec(cmd)
+                    # update img
+                    if 'img' in data.plot[target]:
+                        #print('move_to: showing img: '+data.plot[target]['img'])
+                        _show_new_img(data.plot[target]['img'])
+                        if do_save:
+                            save.last_img = data.plot[target]['img']
+                    # eval jump for insta jump to different nodes
+                    if 'eval_jump_to' in data.plot[target]:
+                        #print('move_to: jump...')
+                        jump = eval(data.plot[target]['eval_jump_to'])
+                        if jump:
+                            #print('move_to: jump to: '+str(jump))
+                            if jump in data.plot:
+                                progress_time(0)
+                                move_to(jump)
+                                return
+                    # branch
+                    if 'branch' in data.plot[target]:
+                        # 'random_branch' is a special value
+                        # it can be used as a branch_condition in the plot
+                        # to randomly select one of the branches
+                        r_branch = []
+                        for branch_condition, branch_target in data.plot[target]['branch']:
+                            if 'random_branch' in branch_condition:
+                                # add all the targets to a list
+                                r_branch.append(branch_target)
+                        if r_branch:                            
+                            # keep a copy, just in case we del all the items
+                            r_branch_copy = [i for i in r_branch]
+                            # remove previous rolls from our list
+                            # save.get_list() will return an empty list if there's nothing saved
+                            previous_rolls = save.get_list('_rbranch_'+target)                          
+                            for last_target in previous_rolls:
+                                if last_target in r_branch:
+                                    del r_branch[r_branch.index(last_target)]                           
+                            # make sure that the roll won't end up on the same target twice
+                            if previous_rolls:
+                                if previous_rolls[-1] in r_branch:
+                                    r_branch = [ t for t in r_branch if t != previous_rolls[-1] ]                           
+                            # we removed some items from r_branch,
+                            # need to check if we still got anything there
+                            # if not, we reset to the original state and del the saved rolls
+                            if not r_branch:
+                                r_branch = r_branch_copy
+                                save.remove('_rbranch_'+target)
+                            # get one, random target and go there
+                            random_target = random_choice(r_branch)
+                            # save.append_list() handles the creation of a list
+                            # so we can append even if there is no list
+                            save.append_list('_rbranch_'+target, random_target)
+                            move_to(random_target)
+                            return
+
+                        # b_id, b_num can be used in branch conditions
+                        b_id = 1
+                        b_num = len(data.plot[target]['branch'])
+                        for branch_condition, branch_target in data.plot[target]['branch']:
+                            #print('move_to: branch: '+str(branch_condition)+', '+str(branch_target))
+                            if eval(branch_condition):
+                                move_to(branch_target)
+                                return
+                            b_id += 1
+                        # something went wrong...
+                        show_error(f'Plot error: No valid branch found, node: {target}')
+                    #update npc
+                    if 'npc' in data.plot[target]:                       
+                        _show_npc(data.plot[target]['npc'])
+                        if do_save:
+                            save.last_npc = data.plot[target]['npc']
+                    else:
+                        _show_npc(False)
+                        save.last_npc = ''
+                    #update pc
+                    if 'pc' in data.plot[target]:                       
+                        show_pc(True, data.plot[target]['pc'])
+                        if do_save:
+                            save.last_pc = data.plot[target]['pc']
+                    else:
+                        show_pc(False)
+                        save.last_pc = ''
+                    # show choice
+                    if 'choice' in data.plot[target]:                       
+                        _show('txt_arrow', False)
+                        for choice_condition, choice_label, choice_target in data.plot[target]['choice']:
+                            _add_choice(choice_label, choice_condition, choice_target)
+                        if not data.glob.choices:
+                            show_error(f'Plot error: No valid choice found, node: {target}')
+                    else:
+                        _show('txt_arrow')
+                    # update text
+                    if 'txt' in data.plot[target]:                        
+                        _show_txt(data.plot[target]['txt'])
+                    else:
+                        _show_txt(False)
+                    # save where we are
+                    if do_save:
+                        save.current_plot_node = target
+                    #print('move_to: done.')
+            except Exception as e:
+                show_error(f'Error processing node "{target}": {e}')
+
+        @bind(doc['main_txt'], 'click')
+        def _move_to_next(event=None):
+            ''' Moves to the next plot node'''
+            # only move to next if the text box is visible
+            # we may be at some special screen (shop/map)
+            # where the current and next nodes are defined
+            # but we don't want the player to skip
+            if event is not None and doc['main_txt'].style.display == 'none':
+                return
+            current_node = data.glob._current
+            if current_node:
+                if current_node in data.plot:
+                    if 'next' in data.plot[current_node]:
+                        doc['history_txt'].textContent += str(doc['txt'].textContent).strip()+'\n\n'
+                        move_to(data.plot[current_node]['next'])
+
+        ################################################################
+        ## Map
+        ################################################################
+        def add_poi(name):
+            '''Add a Point Of Interest to the list of known POIs'''
+            save.add_flag('known_poi', name)
+
+        def del_poi(name):
+            ''' Removes a Point Of Interest to the list of known POIs '''
+            save.remove_flag('known_poi', name)
+
+        def show_map(poi_list=None, show_known=True):
+            ''' Shows the map screen updates the map pins POI'''
+            tod = get_time_of_day()
+            if tod in (TIME.MORNING, TIME.AFTERNOON):
+                _show_new_img('img/map_dusk.webp')
+            elif tod in (TIME.EVENING, TIME.NIGHT):
+                _show_new_img('img/map_dark.webp')
+            else:
+                _show_new_img('img/map.webp')
+            progress_time(0)
+            doc['choice'].clear()
+            doc['imgs_aux'].clear()
+            _show_txt(False)
+            show_pc(False)
+            if poi_list is None:
+                poi_list=[]
+            for label, icon, target, name, x, y in data.poi:
+                show_this = False
+                if poi_list and name in poi_list:
+                    show_this = True
+                if show_known and save.has_flag('known_poi', name):
+                    show_this = True
+
+                if show_this:
+                    _add_marker(label, icon, target, x, y)
+
+        def _add_marker(label, icon, target, x, y):
+            ''' Adds a marker to the map screen'''
+            if x < 500:
+                marker_cls ='map_marker_left'
+            elif x > 780:
+                marker_cls ='map_marker_right'
+            else:
+                marker_cls ='map_marker_center'
+            # translate the x,y coords from pixels to %
+            x = '{:.2f}%'.format(x/12.8)
+            y = '{:.2f}%'.format(y/7.2)
+            if icon:
+                icon = chr(int(icon, 16))
+            marker = html.DIV(' '+label+' ', #TODO: fix extra space for offset map marker ::before shenanigans
+                              Class=marker_cls,
+                              data_icon=icon,
+                              id='mm_'+target,
+                              style={'top':y,'left':x} )
+            marker.bind('click', _on_marker_click)
+            doc['imgs_aux'].appendChild(marker)
+
+        def remove_map_event(target, from_poi=None, target_poi=None):
+            ''' Removes a dynamic map event,
+                If target is None this will remove ALL map events for the  from_poi/target_poi
+            '''
+            save_name = None
+            if from_poi is None and target_poi is None:
+                save_name = 'map_event'
+            elif from_poi and target_poi:
+                save_name ='map_ev_fromto_'+from_poi+'_'+target_poi
+            elif from_poi is None and target_poi is not None:
+                save_name = 'map_ev_from_'+from_poi
+            elif from_poi is not None and target_poi is None:
+                save_name = 'map_ev_to_'+target_poi
+
+            if save_name:
+                if target is None:
+                    save.remove(save_name)
+                    return
+                targets = save[save_name]
+                if targets:
+                    if '[' in targets and targets != '[]': # is it a list?
+                        # try to unpack the list
+                        targets_list=None
+                        try:
+                            targets_list = eval(targets)
+                        except Exception:
+                            pass
+                        if targets_list:
+                            if target in targets_list:
+                                del targets_list[targets_list.index(target)]
+                            save[save_name] = str(targets_list)
+                    else: # not a list
+                        if targets == target:
+                            save.remove(save_name)
+
+        def set_map_event(target, from_poi=None, target_poi=None):
+            ''' Sets a dynamic map event '''
+            save_name = None
+            if from_poi is None and target_poi is None:
+                save_name = 'map_event'
+            elif from_poi and target_poi:
+                save_name ='map_ev_fromto_'+from_poi+'_'+target_poi
+            elif from_poi is None and target_poi is not None:
+                save_name = 'map_ev_to_'+from_poi
+            elif from_poi is not None and target_poi is None:
+                save_name = 'map_ev_from_'+target_poi
+
+            if save_name:
+                targets = save[save_name]
+                if targets:
+                    if '[' in targets and targets != '[]': # is it a list?
+                        # try to unpack the list
+                        targets_list=None
+                        try:
+                            targets_list = eval(targets)
+                        except Exception:
+                            pass
+                        if targets_list:
+                            targets_list.append(target)
+                            save[save_name] = str(targets_list)
+                    else: # not a list, make it one and add the new target
+                        save[save_name] = f"['{targets}', '{target}']"
+                else:
+                    save[save_name] = f"['{target}']"
+
+        def _get_map_event(from_poi, target_poi):
+            ''' Returns a map event based on the current location, target, time, random etc
+                If no suitable event exists returns None
+            '''
+            # moving to a plot node not a map node
+            if not target_poi.startswith('map_'):
+               return None
+            # go to bed at night, else things get messy
+            if is_time_of_day(TIME.NIGHT):
+                return 'night_go_home'
+            current_clothes_set = set()
+            for name, slot in inventory.items():
+                if slot:
+                    current_clothes_set.add(name)
+
+            # always valid global events can be added here
+
+            # saved map events
+            # priority:
+            # 0. generic - happens NOW, wherever you go.
+            # 1. from current location (happened as you leave)
+            # 2. from place to place (route specific)
+            # 3. at target (happened when you arrive)
+            save_name = None
+            if save.map_event:
+                save_name = 'map_event'
+            elif 'map_ev_from_'+from_poi in save:
+               save_name = 'map_ev_from_'+from_poi
+            elif 'map_ev_fromto_'+from_poi+'_'+target_poi in save:
+                save_name ='map_ev_fromto_'+from_poi+'_'+target_poi
+            elif 'map_ev_to_'+target_poi in save:
+                save_name ='map_ev_to_'+target_poi
+            # we got some event or a events list?
+            if save_name:
+                targets = save[save_name]
+                if targets:
+                    if '[' in targets and targets != '[]': # is it a list?
+                        # try to unpack the list
+                        targets_list=None
+                        try:
+                            targets_list = eval(targets)
+                        except Exception:
+                            pass
+                        if targets_list:
+                            # return the first item on the list, save the rest
+                            target = targets_list.pop(0)
+                            if targets_list:
+                                save[save_name] = str(targets_list)
+                            else:
+                                save.remove(save_name)
+                            return target
+                        else:
+                            save.remove(save_name)
+                    else: # not a list, remove and return the raw value
+                        save.remove(save_name)
+                        return targets
+            # random events
+            if chance(int(save.map_event_chance)):
+                map_events={}
+                bonus={}
+                time_of_day = get_time_of_day_name()
+                try:
+                    for evnt in data.map_events:
+                        if  (
+                                evnt['from'] in ('', from_poi)
+                                and evnt['to'] in ('', target_poi)
+                                and evnt['time_of_day'] in ('', time_of_day)
+                                and eval(evnt['eval'])
+                                and set(evnt['clothes']) <= current_clothes_set
+                            ):
+                            if evnt['chance']+ int( evnt['slut_x'] * save.current_slut ) > 0:
+                                map_events[evnt['target']] = evnt['chance']
+                                bonus[evnt['target']] = int( evnt['slut_x'] * save.current_slut )
+                except Exception as e:
+                    print(f'Random map event error: {e}')
+                if map_events:
+                    print('map_events',map_events )
+                    return random_choice_adv('map_event', map_events, bonus)
+            # no events, carry on
+            return None
+
+        def _on_marker_click(event):
+            '''Fired when player clicks on a map marker,
+            EITHER moves to the plot node encoded in the event.target.id
+            OR moves to a map event
+            '''
+            button_id = event.target.id
+            target_poi = button_id.removeprefix('mm_')
+            from_poi = save.current_location
+            save.target_location = target_poi
+            doc['imgs_aux'].clear()
+
+            # time critical events
+            tce = get_tce()
+            if tce:
+                target, day, hour, map_poi, map_redirect = tce
+                print(target_poi, map_poi)
+                if target_poi == map_poi:
+                    remove_tce(day=day, hour=hour)
+                    move_to(target)
+                else:
+                     move_to(map_redirect)
+            else:
+                # map events
+                map_event_target = _get_map_event(from_poi, target_poi)
+                if map_event_target is not None:
+                    target_poi = map_event_target
+                    save.current_location = '_not_in_kansas_'
+                else:
+                    save.current_location = target_poi
+                move_to(target_poi)
+
+
+        ################################################################
+        ## Audio/music/tts
+        ################################################################
+        def tts_actor(actor_name):
+            ''' Set/override the tts speaker for one text box
+                Use in formatted text eg. { tts_actor('mnpc') }
+            '''
+            data.glob.override_speaker = actor_name
+            return ''
+
+        def _make_voice_select(actor_name):
+            ''' Creates some html tags for the user to select tts voices
+            '''
+            voice_div = html.DIV(Class='tts_voice', id='voice_'+actor_name)
+            voice_div.appendChild( html.SELECT(id='tts_select_v_'+actor_name) )
+            voice_div.appendChild( html.BR() )
+            voice_div.appendChild( html.IMG(src='img/portrait/'+actor_name+'.webp', Class='portrait') )
+
+            voice_pitch = html.FIELDSET(Class='tts_fieldset')
+            voice_pitch.appendChild(html.LEGEND('Pitch:'))
+            voice_pitch.appendChild( html.INPUT(type="range", Class='tts_slider', value='1', min='0.1', max='1.9', step='0.1', id='tts_pitch_v_'+actor_name) )
+            voice_div.appendChild(voice_pitch)
+
+            voice_speed = html.FIELDSET(Class='tts_fieldset')
+            voice_speed.appendChild(html.LEGEND('Speed:'))
+            voice_speed.appendChild( html.INPUT(type="range", Class='tts_slider', value='1', min='0.1', max='1.9', step='0.1', id='tts_speed_v_'+actor_name) )
+            voice_div.appendChild(voice_speed)
+
+            voice_div.appendChild( html.BUTTON('TEST VOICE', type='button', Class='tts_button', id='tts_test_v_'+actor_name) )
+            doc['tts_voices'].appendChild(voice_div)
+
+        def _show_tts_setup(event=None):
+            ''' Toggles the tts setup panel
+            '''
+            vis = doc['tts_config'].style.display
+            if vis == 'none':
+                doc['tts_config'].style.display = ''
+            else:
+                doc['tts_config'].style.display ='none'
+
+        def _set_tts_pitch(event):
+            ''' Set the pitch for a specific actor voice,
+                the actor name is encoded in the event
+            '''
+            try:
+                actor_name = str(event.target.id)[12:]
+                value = round(float(event.target.value), 2)
+                cfg['pitch_for_'+actor_name] = value
+            except Exception as e:
+                print(f'Warning: tts pitch set error. {e}' )
+
+        def _set_tts_speed(event):
+            ''' Set the speed/rate for a specific actor voice,
+                the actor name is encoded in the event
+            '''
+            try:
+                actor_name = str(event.target.id)[12:]
+                value = round(float(event.target.value), 2)
+                cfg['speed_for_'+actor_name] = value
+            except Exception as e:
+                print(f'Warning: tts speed set error. {e}' )
+
+        @bind(doc['tts_lang_set'], 'click')
+        def _set_tts_lang(event):
+            '''Sets the tts language(?)'''
+            cfg.tts_lang = doc['tts_lang'].value
+
+        def _set_tts_voice(event):
+            ''' Set the name of a specific actor voice,
+                the actor name is encoded in the event
+            '''
+            try:
+                actor_name = str(event.target.id)[13:]
+                dropdown = event.target
+                num = dropdown.selectedIndex
+                if num > -1:
+                    voice_name = dropdown.options[num].value
+                else:
+                    return
+                cfg['voice_for_'+actor_name] = voice_name
+            except Exception as e:
+                print(f'Warning: tts voice set error. {e}' )
+
+        def _test_voice(event):
+            ''' Use the specific actor voice/pitch/speed setup to speak a test sentence.
+            '''
+            try:
+                actor_name = str(event.target.id)[11:]
+                #print(actor_name)
+                if not 'voice_for_'+actor_name in cfg:
+                    dropdown = doc['tts_select_v_'+actor_name]
+                    num = dropdown.selectedIndex
+                    if num > -1:
+                        actor_name = dropdown.options[num].value
+                    else:
+                        return
+                _speak("When you say shark in a hat, do you mean a shark that's wearing a hat or a hat with a shark inside?", actor_name)
+            except Exception as e:
+                show_error(f'Text-to-speech error: {e}')
+
+        def _save_tts_volume(event=None):
+            '''Fired when the user changes tts volume
+                Saves the current volume value to the storage
+            '''
+            vol = round(float(doc['tts_volume'].value)*0.01, 2)
+            cfg.tts_volume = str(vol)
+
+        def _speak(text, speaker='default'):
+            ''' Use TTS to convert the 'text' to audio
+            '''
+            volume = float(cfg.tts_volume)
+            lang = 'en-US'
+            if cfg.tts_lang:
+                lang = cfg.tts_lang
+            if volume > 0.0:
+                speaker=''.join((l for l in speaker.lower() if l in 'abcdefghijklmnopqrstuvwxyz123456789'))
+
+                if speaker in data.speaker_alias:
+                    speaker= data.speaker_alias[speaker]
+                rate = 1.0
+                pitch = 1.0
+                if 'pitch_for_'+speaker in cfg:
+                    pitch = cfg['pitch_for_'+speaker]
+                if 'speed_for_'+speaker in cfg:
+                    rate = cfg['speed_for_'+speaker]
+                if 'voice_for_'+speaker in cfg:
+                    voice_name = cfg['voice_for_'+speaker]
+                else:
+                    try:
+                        voice_name = data.voices[0].name
+                    except Exception as e:
+                        print(f'TTS Error, no valid default voice. {e}')
+                        cfg.tts_volume = 0
+                        return
+                try:
+                    data.speak_txt(text, volume, rate, pitch, voice_name, lang)
+                except Exception as e:
+                    print(f'TTS Error {e}')
+
+        def _save_music_volume(event=None):
+            '''Fired when the user changes music volume
+                Saves the current volume value to the storage
+            '''
+            vol = round(float(doc['volume'].value)*0.01, 2)
+            music_player = doc['music_player']
+            music_player.volume = vol
+            cfg.volume = str(vol)
+
+        def music(name, loop=True):
+            '''Alias for play_music'''
+            play_music('audio/'+name+'.mp3', loop)
+
+        def _on_end_music_loop(event=None):
+            '''Event that loops the music if it ends.'''
+            doc['music_player'].currentTime = 0
+            try:
+                doc['music_player'].play()
+            except Exception as e:
+                pass
+
+        def play_music(url=None, loop=True):
+            '''Play a music(.mp3) file using the browsers build-in player
+                Same Origin Policy applies(?).
+            '''
+            try:
+                save.last_music=url
+                music_player = doc['music_player']
+                music_player.unbind("ended", _on_end_music_loop)
+                if loop:
+                    doc['music_player'].bind("ended", _on_end_music_loop)
+                if 'volume' in cfg:
+                    music_player.volume = float(cfg.volume)
+                else:
+                    # music might be unexpected,
+                    # so we start it kind of muted not to blow up ears
+                    music_player.volume = 0.3
+                if url:
+                    if music_player.src != url:
+                        music_player.src = url
+                        music_player.load()
+                music_player.play()
+            except Exception as e:
+                print(f'Warning: Audio: {url} Error: {e}')
+
+        ################################################################
+        ## Zoom functions:
+        ################################################################
+        @bind(data.window, 'resize')
+        def _on_resize(event=None):
+            '''Resets zoom and updates sizes when the browser window is resized '''
+            doc['main_body'].style['font-size'] = '100%'
+            r = doc.querySelector(':root')
+            rs = data.getComputedStyle(r);
+            use_vh =  int(rs.getPropertyValue('--use_vh'))
+            zoom =  int(rs.getPropertyValue('--body_width')[:-2])
+            unit =  rs.getPropertyValue('--body_width')[-2:]
+            if (use_vh and unit == 'vh') or (not use_vh and unit == 'vw'):
+                return
+            _reset_zoom()
+
+        @bind(doc['zoom_reset'], 'click')
+        def _reset_zoom(event=None):
+            ''' Reset the font and image zoom to default values'''
+            if 'zoom' in cfg:
+                cfg.remove('zoom')
+            if 'font_size' in cfg:
+                cfg.remove('font_size')
+            doc['main_body'].style['font-size'] = '100%'
+            r = doc.querySelector(':root')
+            rs = data.getComputedStyle(r);
+            use_vh =  int(rs.getPropertyValue('--use_vh'))
+            if use_vh:
+                r.style.setProperty('--body_width', '170vh');
+            else:
+                r.style.setProperty('--body_width', '96vw');
+
+        def _set_zoom(zoom_level):
+            '''Set the zoom level to zoom_level'''
+            r = doc.querySelector(':root')
+            r.style.setProperty('--body_width', zoom_level);
+            cfg.zoom = zoom_level
+
+        def _set_font_zoom(zoom_level):
+            '''Set the font zoom to  zoom_level%, use int as zoom_level'''
+            font_size =str(int(zoom_level))+'%'
+            doc['main_body'].style['font-size'] = font_size
+            cfg.font_size = font_size
+
+        def _zoom(event=None):
+            ''' Change the size of the game area, keeping font size '''
+            button_id = event.target.id
+            body = doc['main_body']
+            r = doc.querySelector(':root')
+            rs = data.getComputedStyle(r);
+            current_zoom =  int(rs.getPropertyValue('--body_width')[:-2])
+            unit = 'vw'
+            use_vh =  int(rs.getPropertyValue('--use_vh'))
+            if use_vh:
+                unit = 'vh'
+
+            if button_id == 'zoomout':
+                current_zoom = str( max(1, current_zoom-1))+unit
+            elif button_id == 'zoomin':
+                current_zoom = str(current_zoom+1)+unit
+            r.style.setProperty('--body_width', current_zoom);
+            cfg.zoom = current_zoom
+
+        def _zoom_font(event=None):
+            ''' Change the font size '''
+            button_id = event.target.id
+            body = doc['main_body']
+            if button_id == 'font_zoomout':
+                font_size = str(max(1, int(body.style['font-size'][:-1])-3))+'%'
+            else:
+                font_size = str(int(body.style['font-size'][:-1])+3)+'%'
+            body.style['font-size'] = font_size
+            cfg.font_size = font_size
+
+        ################################################################
+        ## Start up!
+        ################################################################
+
+        try:
+            # check version v.data_major.data_minor-engine.css
+            version_string = data.data_version +'-'+doc['version'].content
+            doc['copyright'].textContent = '___TEMPLATE_COPYRIGHT___. v.'+version_string
+
+            # check if we are running from localhost
+            host = data.location.href
+            if not host.startswith('file'):
+                if doc.referrer:
+                    show_error('Game loaded from: '+str(data.location.href)+" If You see a frame and crappy ads around, visit that URL directly.")
+
+            # restore zoom
+            if 'zoom' in cfg:
+                r = doc.querySelector(':root')
+                r.style.setProperty('--body_width', str(cfg.zoom));
+            # restore font size
+            if 'font_size' in cfg:
+                doc['main_body'].style['font-size'] = str(cfg.font_size)
+            # restore volume
+            if 'volume' in cfg:
+                vol = float(cfg.volume)
+                doc['volume'].value = str(int(vol*100))
+                music_player = doc['music_player']
+                music_player.volume = vol
+            # restore tts volume
+            if 'tts_volume' in cfg:
+                vol = float(cfg.tts_volume)
+                doc['tts_volume'].value = str(int(vol*100))
+
+            ## Bind buttons/events
+            # note: some buttons are using the '@bind()' decorator
+            doc['font_zoomin'].bind('click', _zoom_font)
+            doc['font_zoomout'].bind('click', _zoom_font)
+            doc['zoomin'].bind('click', _zoom)
+            doc['zoomout'].bind('click', _zoom)
+            # events for dropdown changes (clothing)
+            for inv_slot in doc['inventory_slots'].children:
+                inv_slot.bind('input', _on_equip)
+            #bind the shop filter dropdown
+            doc['shop_filter'].bind('input', _on_shop_filter)
+            # bind keys
+            doc['main_body'].bind('keypress', _on_keydown)
+            # bind volume control slider
+            doc['volume'].bind('input', _save_music_volume)
+
+            # bind the credits auto-magic
+            doc['credits'].bind('animationend', _next_credit)
+            # bind the toggle_txt button to the _toggle_txt function
+            doc['txt_hide_ico'].bind('click', _toggle_txt)
+            doc['click_anywhere'].bind('click', _toggle_txt)
+
+            #get url parameters
+            if '?' in host:
+                host = host.split('?')[1]
+            for param in host.split('&'):
+                key = param
+                value = 0
+                if '=' in param:
+                    key, value = param.split('=')
+                _apply_url_param(key, value)
+
+            # tts setup
+            # make the panels for all actors
+            for v in data.known_voices:
+                _make_voice_select(v)
+
+            # bind main volume control
+            doc['tts_volume'].bind('input', _save_tts_volume)
+            for ttsvoice in doc['tts_voices'].children:
+                actor_name = str(ttsvoice.id)[6:]
+                selected_voice = None
+                if 'voice_for_'+actor_name in cfg:
+                    selected_voice = cfg['voice_for_'+actor_name]
+                # add known voices to dropdown
+                for voice in data.voices:
+                    v_name = voice.name
+                    opt = html.OPTION(v_name, value=v_name)
+                    if selected_voice == v_name:
+                        opt.selected = 'selected'
+                    doc['tts_select_v_'+actor_name].appendChild(opt)
+                # bind the dropdown
+                doc['tts_select_v_'+actor_name].bind('input', _set_tts_voice)
+                # get the pitch/speed from cfg
+                if 'pitch_for_'+actor_name in cfg:
+                    doc['tts_pitch_v_'+actor_name].value = str(cfg['pitch_for_'+actor_name])
+                if 'speed_for_'+actor_name in cfg:
+                    doc['tts_speed_v_'+actor_name].value = str(cfg['speed_for_'+actor_name])
+                # bind pitch and speed (rate)
+                doc['tts_pitch_v_'+actor_name].bind('input', _set_tts_pitch)
+                doc['tts_speed_v_'+actor_name].bind('input', _set_tts_speed)
+                # bind test button
+                doc['tts_test_v_'+actor_name].bind('click', _test_voice)
+            #bind the save/close tts button
+            doc['tts_close'].bind('click', _show_tts_setup)
+            doc['cfg_tts'].bind('click', _show_tts_setup)
+            #bind the show/hide history buttons
+            doc['history_close'].bind('click', lambda ev: _show('history', False))
+            doc['history_button'].bind('click', lambda ev: _show('history', True))
+            #bind the show/hide mod menu buttons
+            doc['mod_menu_close'].bind('click', lambda ev: _show('mod_menu', False))
+            doc['mod_button'].bind('click', lambda ev: _show('mod_menu', True))
+            #bind the button in the modal dialog
+            doc['modal_cancel'].bind('click', lambda ev: _show('modal_box', False))
+            #doc['modal_ok'].bind('click', _run_modal_cmd)
+            #bind the add outfit button
+            doc['outfit_add'].bind('click', lambda ev: _show_modal_input('Type in a name for the outfit', 'Outfit', '_add_outfit(doc["modal_input"].value)'))
+
+
+            #support buttons
+___TEMPLATE_MONETIZE_SCRIPT___
+            
+            # game init
+___TEMPLATE_INIT_SCRIPT___
+
+            # Load mods:
+            for mod_name in data.loadorder:
+                if mod_name in data.active_mods:
+                    try:
+                        exec(data.mods[mod_name])
+                    except Exception as e:
+                        show_error('Error loading mod "'+mod_name+'": '+str(e))
+            # hide the loading txt when all is done
+            _show('loading', False)
+        except Exception as e:
+            show_error(f'Error starting the game, TRY RELOADING THE PAGE: {e}')
+            _show('loading', False)
+       </script>
+    </body>
+</html>

@@ -1,0 +1,5 @@
+// Copyright 2021 Shark in a Hat. All Rights Reserved.
+var map_events = [    
+    {'from':'', 'to':'', 'time_of_day':'Afternoon', 'chance':50, 'slut_x':0, 'eval':'True', 'target':'hypno', 'clothes': [] },
+    {'from':'', 'to':'', 'time_of_day':'Midday',    'chance':30, 'slut_x':0, 'eval':'True', 'target':'hypno', 'clothes': [] },
+];

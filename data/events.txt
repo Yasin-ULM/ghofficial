@@ -1,0 +1,18 @@
+// Copyright 2021 Shark in a Hat. All Rights Reserved.
+var random_events = {    
+    'home':[
+            [ 'True', 'some_home_event'];
+            ],
+    'sch2_basement':[],        
+    'sch2_shower':[],
+    'sch2_cafeteria':[],
+    'sch2_wc':[],
+    'sch2_explore':[],
+    'sch2_explore':[],
+    'sch2_zuza':[],
+    'sch2_jeff':[],
+    'sch2_headmaster':[],
+    'sch2_ben':[],
+    'sch2_lenard':[],
+    'sch2_marco':[],
+};

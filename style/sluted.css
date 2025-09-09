@@ -1,0 +1,369 @@
+/*
+    Plotato Engine license:
+    Copyright 2021-2023 Shark in a Hat (shark_in_a_hat@protonmail.com)
+    Supported by: Matt, CodE, hinaberg, jehefuco, KryperCreeping,
+                  cuckold_yyc, GABRIEL ALFORD, Reld, MrSuicide,
+                  Naurd, Mathieu Gouillart, BettyPage, Maximus,
+                  Theo_Malt, Alex, Foxy'sFan, Dov D Bush, Overseer,
+                  Franatique, mahena, An Anonymous Benefactor, Joe Steel,
+                  David Kindler, bsnick, BranVan, Jayjay Fan, lea,
+                  helena ho, coni, evilbiscuit, Iroquois Pliskin, Ab,
+                  Drunkmilkman, bouncy4u
+
+    Permission to use, copy, modify, and/or distribute this software
+    for any purpose with or without fee is hereby granted, provided
+    that the above copyright notice and this permission notice
+    appear in all copies.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
+    WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
+    THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR
+    CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+    NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+    CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+*/
+.overlay_2frame{
+    width: 100%;
+    height: auto;
+    position: absolute;
+    -webkit-user-select: none;
+    user-select: none;
+    animation-name: fade_2frame;    
+    animation-duration: 416ms;
+    animation-iteration-count: infinite;
+}
+@keyframes fade_2frame{  
+  0% { opacity: 0%;}
+  100% { opacity: 100%;}  
+}
+
+.overlay_2frame_slow{
+    width: 100%;
+    height: auto;
+    position: absolute;
+    -webkit-user-select: none;
+    user-select: none;
+    animation-name: fade_2frame;    
+    animation-duration: 1600ms;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+@keyframes fade_2frame_slow{  
+  0% { opacity: 0%;}
+  49.5% { opacity: 0%;}    
+  50% { opacity: 50%;}  
+  50.5% { opacity: 100%;}
+  100% { opacity: 100%;}  
+}
+
+
+.overlay_bnw{
+    background: black;
+    mix-blend-mode: saturation;
+    width: 100%;
+    height: auto;
+    position: absolute;
+    -webkit-user-select: none;
+    user-select: none;
+    }
+
+.overlay_blackout{
+    background: radial-gradient(rgba(255,255,255,0), black);
+    width: 100%;
+    height: auto;
+    position: absolute;
+    -webkit-user-select: none;
+    user-select: none;
+    background-size: 600% 600%;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    opacity: 0%;
+    animation-name: blackout;
+    animation-duration: 4000ms;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-out;
+    animation-fill-mode: forwards;
+}
+
+@keyframes blackout{
+  0% { background-size: 600% 600%; opacity: 0%;}
+  100%   { background-size: 100% 100%; opacity: 100%;}
+}
+
+.overlay_drug {
+    background: linear-gradient(45deg, rgb(230,0,219) 0%, rgb(0,0,0) 10%, rgb(0,200,70) 100%);
+    width: 100%;
+    height: auto;
+    position: absolute;
+    mix-blend-mode: saturation;
+    -webkit-user-select: none;
+    user-select: none;
+    background-size: 100% 100%;
+    animation-name: drug;
+    animation-duration: 6000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+    animation-direction: alternate;
+}
+
+@keyframes drug{
+  0% { background-size: 100% 100%; opacity: 70%;}
+  50% { opacity: 20%;}
+  100%   { background-size: 1200% 100%; opacity: 70%;}
+}
+
+.underlay_busview{
+    background: url("../img/fx/bus_bg.webp") repeat-x;
+    width: 100%;
+    height: auto;
+    position: absolute;
+    -webkit-user-select: none;
+    user-select: none;
+    animation-name: scroll_busview;
+    animation-duration: 2000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    z-index: -1;
+}
+
+.overlay_rain {
+    background: url("../img/fx/rain.webp") repeat;
+    mix-blend-mode: difference;
+    width: 100%;
+    height: auto;
+    position: absolute;
+    -webkit-user-select: none;
+    user-select: none;
+    animation-name: scroll_rain;
+    animation-duration: 8000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.overlay_rain2 {
+    background: url("../img/fx/rain2.webp") repeat;
+    mix-blend-mode: difference;
+    width: 100%;
+    height: auto;
+    position: absolute;
+    -webkit-user-select: none;
+    user-select: none;
+    animation-name: scroll_rain;
+    animation-duration: 9000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.overlay_fog {
+    background: url("../img/fx/fog.webp") repeat;
+    width: 100%;
+    height: auto;
+    position: absolute;
+    -webkit-user-select: none;
+    user-select: none;
+    animation-name: scroll_up_right;
+    animation-delay: 111ms;
+    animation-duration: 20000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.overlay_fog2 {
+    background: url("../img/fx/fog.webp") repeat;
+    width: 100%;
+    height: auto;
+    position: absolute;
+    -webkit-user-select: none;
+    user-select: none;
+    animation-name: scroll_up_left;
+    animation-delay: 237ms;
+    animation-duration: 21000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+.overlay_cthulhu2 {
+    width: 100%;
+    height: auto;
+    position: absolute;
+    -webkit-user-select: none;
+    user-select: none;
+    animation-name: fade_in_special;    
+    animation-duration: 6000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in;
+    animation-direction: alternate;
+    mix-blend-mode: difference;
+}
+
+.overlay_cthulhu {
+    width: 100%;
+    height: auto;
+    position: absolute;
+    -webkit-user-select: none;
+    user-select: none;
+    animation-name: fade_in_50;    
+    animation-duration: 3000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in;
+    animation-direction: alternate;
+    mix-blend-mode: screen;
+}
+
+@keyframes scroll_busview {
+  from { background-position: 0 0;}
+  to   { background-position: 1400px 0px;}
+}
+
+@keyframes scroll_rain {
+  from { background-position: 0 0;}
+  to   { background-position: -1280px 3600px;}
+}
+
+@keyframes scroll_up_right {
+  from { background-position: 0 0;}
+  to   { background-position: -1280px -720px;}
+}
+
+@keyframes scroll_up_left {
+  from { background-position: 0 0;}
+  to   { background-position: 1280px -720px;}
+}
+
+@keyframes fade_in_some {
+  from {opacity: 0.1;}
+  to   {opacity: 0.55;}
+}
+
+@keyframes fade_in_75 {
+  from {opacity: 0.0;}
+  to   {opacity: 0.75;}
+}
+
+@keyframes fade_in_50 {
+  from {opacity: 0.0;}
+  to   {opacity: 0.5;}
+}
+@keyframes fade_in_special {
+  0%   {opacity: 0.1;}
+  25%   {opacity: 0.0;}
+  75%  {opacity: 0.2;}  
+  100% {opacity: 0.75;}
+}
+
+.overlay_disco1 {
+    width: 100%;
+    height: auto;
+    position: absolute;
+    -webkit-user-select: none;
+    user-select: none;
+    mix-blend-mode: screen;
+    animation-name: fade_in;
+    animation-delay: 111ms;
+    animation-duration: 400ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-direction: alternate;
+}
+
+.overlay_disco2 {
+    width: 100%;
+    height: auto;
+    position: absolute;
+    -webkit-user-select: none;
+    user-select: none;
+    mix-blend-mode: screen;
+    animation-name: fade_in;
+    animation-delay: 37ms;
+    animation-duration: 650ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-direction: alternate;
+}
+
+.overlay_disco3 {
+    width: 100%;
+    height: auto;
+    position: absolute;
+    -webkit-user-select: none;
+    user-select: none;
+    mix-blend-mode: screen;
+    animation-name: fade_in;
+    animation-delay: 78ms;
+    animation-duration: 511ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-direction: alternate;
+}
+
+.overlay_disco4 {
+    width: 100%;
+    height: auto;
+    position: absolute;
+    -webkit-user-select: none;
+    user-select: none;
+    mix-blend-mode: screen;
+    animation-name: fade_in;
+    animation-delay: 189ms;
+    animation-duration: 920ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-direction: alternate;
+}
+
+.overlay_disco_hue1 {
+    width: 100%;
+    height: auto;
+    position: absolute;
+    -webkit-user-select: none;
+    user-select: none;
+    mix-blend-mode: hue;
+    animation-name: fade_in_some;
+    animation-delay: 37ms;
+    animation-duration: 277ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-direction: alternate;
+}
+
+.overlay_disco_hue2 {
+    width: 100%;
+    height: auto;
+    position: absolute;
+    -webkit-user-select: none;
+    user-select: none;
+    mix-blend-mode: hue;
+    animation-name: fade_in_some;
+    animation-delay: 189ms;
+    animation-duration: 513ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-direction: alternate;
+}
+
+
+/* Nuke all anims if user has reduce motion set*/
+@media (prefers-reduced-motion: reduce) {
+    @keyframes scroll_busview {}
+    @keyframes scroll_rain {}
+    @keyframes drug{}
+    @keyframes blackout{
+        0%     { background-size: 100% 100%; opacity: 75%;}
+        100%   { background-size: 100% 100%; opacity: 100%;}
+    }
+    .overlay_disco1 {
+        display:none;
+    }
+    .overlay_disco2 {
+        display:none;
+    }
+    .overlay_disco3 {
+        display:none;
+    }
+    .overlay_disco4 {
+        display:none;
+    }
+    @keyframes fade_in_some {
+        from {opacity: 0.3;}
+        to   {opacity: 0.3;}
+    }
+}

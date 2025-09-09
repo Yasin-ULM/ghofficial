@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!-- '''Plotato Engine license:
+        Copyright 2021-2023 Shark in a Hat (shark_in_a_hat@protonmail.com)
+        Supported by: Matt, CodE, hinaberg, jehefuco, KryperCreeping,
+                  cuckold_yyc, GABRIEL ALFORD, Reld, MrSuicide,
+                  Naurd, Mathieu Gouillart, BettyPage, Maximus,
+                  Theo_Malt, Alex, Foxy'sFan, Dov D Bush, Overseer,
+                  Franatique, mahena, An Anonymous Benefactor, Joe Steel,
+                  David Kindler, bsnick, BranVan, Jayjay Fan, lea,
+                  helena ho, coni, evilbiscuit, Iroquois Pliskin, Ab,
+                  Drunkmilkman, bouncy4u
+
+        Permission to use, copy, modify, and/or distribute this software
+        for any purpose with or without fee is hereby granted, provided
+        that the above copyright notice and this permission notice
+        appear in all copies.
+
+        THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
+        WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
+        WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
+        THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR
+        CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+        LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+        NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+        CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+        NOTE: While used by the original game/engine dev, this tool remains unofficial.
+              No extra effort has been made to make this editor easy to use or usable for
+              anyone else other than the person that made it. The coding is meh, comments
+              are few and far between, UI is janky with functionality hidden or unobvious.
+
+              You You want any help with this editor - feel free to arsk, but if You REALLY
+              want help - put your money where your mouth is.
+
+    ''' -->
+    <meta name="color-scheme" content="dark">
+    <script type="text/javascript" src="../brython/brython.js"></script>
+    <script type="text/javascript" src="../brython/brython_modules.js"></script>
+    <script type="text/javascript" src="../data/items.txt"></script>
+    <script type="text/javascript" src="../data/shops.txt"></script>
+
+    <!-- "Icon, favicon, or shortcut icon, whatever works." -->
+    <link rel="shortcut icon" type="image/ico" href="../img/potato.ico">
+    <link rel="icon" type="image/ico" href="../img/potato.ico">
+
+    <title>Item Editor</title>
+    <style type="text/css">
+        *{
+            line-height: 1.4;
+            font-size: 20px;
+            font-family: monospace, monospace;
+        }
+        html {
+            box-sizing: border-box;            
+        }
+        body{
+            background-color: rgb(90,90,90);
+            color:  white;
+            text-shadow: 1px 1px 1px black;
+            overscroll-behavior: contain;
+        }
+        textarea{
+            line-height: 1.0;
+            font-size: 14px;
+        }
+        input{
+            line-height: 1.0;            
+            margin: 2px;
+        }
+        input[type=checkbox] {
+            transform: scale(1.5);
+        }
+        .pc_img{
+            position: absolute;
+            top: 0;
+        }
+        .columns{
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+        .fix_width{
+            width:320px;
+        }
+        .button{
+            font-size: 100%;
+            text-shadow: none;
+            color: black;
+            background: rgb(210, 210, 230);
+            padding: 4px;
+            margin: 2px 0;
+            border: 1px solid gray;
+            border-radius: 2px;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        .button:hover{
+            border: 1px solid blue;
+        }
+        .flex_centered {
+            display: flex;
+            justify-content: center;  
+        }
+        .scrollable{
+            max-height: 14em;
+            overflow-y: auto;
+            overflow-x: hidden;
+            overscroll-behavior: contain;
+        }          
+    </style>
+</head>
+<body onload="brython( {debug:0, indexedDB:0} )">
+        <div class="columns">
+            <div class="fix_width">
+                <img class="pc_img" alt='nude' srcset="../img/pc/body.webp" id="pc_body" style="display:''';">
+                <img id="preview_img" class="pc_img" alt='ERROR !' srcset="../img/pc/debug_sack.webp">
+                <img class="pc_img" alt='hair' srcset="../img/pc/hair_hands.webp" id="pc_hair" style="display:''';">
+                <input type="checkbox" id="toggle_body" name="toggle_body" value="1" autocomplete="off" checked>
+                <label for="toggle_body"> Show body</label><br>
+            </div>
+            <div>
+                <form autocomplete="off">
+                    <button type="button" class="button" id="save" >Save current item</button>
+                    <br>
+                    >>><input type="text" id="filter_cmd" size="24">
+                    <button type="button" class="button" id="run_filter" >Filter </button>
+                    <br>
+                    ID <select name="itm_select" id="itm_select"></select>
+                    <br>
+                    <input type="text" id="itm_id" size="35"><br>
+                    Name<br>
+                    <input type="text" id="itm_name" size="35"><br>
+                    Img<br>
+                    <input type="text" id="itm_img" size="35"><br>
+                    Slot
+                    <select name="itm_slot" id="itm_slot">
+                        <option value="top">top</option>
+                        <option value="bottom">bottom</option>
+                        <option value="underwear_top">underwear_top</option>
+                        <option value="underwear_bottom">underwear_bottom</option>
+                        <option value="stockings">stockings</option>
+                        <option value="accessory">accessory</option>
+                    </select><br>
+                    Slutty <select name="itm_slutty" id="itm_slutty">
+                        <option value="-1">-1</option>
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        </select>
+                    <br>
+                    Value $<input type="number" id="itm_value" min="0" max="10000" step="5"><br>
+
+                    Tags: <br>
+                    <div id="tags_div" class='scrollable'>
+                        <input type="checkbox" value="clothes_top" id="clothes_top">
+                        <label for="clothes_top">clothes_top</label><br>
+
+                        <input type="checkbox" value="clothes_bottom" id="clothes_bottom">
+                        <label for="clothes_bottom">clothes_bottom</label><br>
+
+                        <input type="checkbox" value="cover_boobs" id="cover_boobs">
+                        <label for="cover_boobs">cover_boobs</label><br>
+
+                        <input type="checkbox" value="partial_cover_boobs" id="partial_cover_boobs">
+                        <label for="partial_cover_boobs">partial_cover_boobs</label><br>
+
+                        <input type="checkbox" value="cover_pussy" id="cover_pussy">
+                        <label for="cover_pussy">cover_pussy</label><br>
+
+                        <input type="checkbox" value="partial_cover_pussy" id="partial_cover_pussy">
+                        <label for="partial_cover_pussy">partial_cover_pussy</label><br>
+
+                        <input type="checkbox" value="panties" id="panties">
+                        <label for="panties">panties</label><br>
+
+                        <input type="checkbox" value="bra" id="bra">
+                        <label for="bra">bra</label><br>
+
+                        <input type="checkbox" value="school" id="school">
+                        <label for="school">school</label><br>
+
+                        <input type="checkbox" value="school_top" id="school_top">
+                        <label for="school_top">school_top</label><br>
+
+                        <input type="checkbox" value="school_bottom" id="school_bottom">
+                        <label for="school_bottom">school_bottom</label><br>
+
+                        <input type="checkbox" value="nude" id="nude">
+                        <label for="nude">nude</label><br>
+
+                        <input type="checkbox" value="maid" id="maid">
+                        <label for="maid">maid</label><br>
+
+                        <input type="checkbox" value="maid_top" id="maid_top">
+                        <label for="maid_top">maid_top</label><br>
+
+                        <input type="checkbox" value="maid_bottom" id="maid_bottom">
+                        <label for="maid_bottom">maid_bottom</label><br>
+
+                        <input type="checkbox" value="bdsm" id="bdsm">
+                        <label for="bdsm">bdsm</label><br>
+
+                        <input type="checkbox" value="sport" id="sport">
+                        <label for="sport">sport</label><br>
+
+                        <input type="checkbox" value="sport_top" id="sport_top">
+                        <label for="sport_top">sport_top</label><br>
+
+                        <input type="checkbox" value="sport_bottom" id="sport_bottom">
+                        <label for="sport_bottom">sport_bottom</label><br>
+
+                        <input type="checkbox" value="stockings" id="stockings">
+                        <label for="stockings">stockings</label><br>
+
+                        <input type="checkbox" value="start" id="start">
+                        <label for="start">start</label><br>
+
+                        <input type="checkbox" value="opaque" id="opaque">
+                        <label for="opaque">opaque</label><br>
+
+                        <input type="checkbox" value="swimsuit" id="swimsuit">
+                        <label for="swimsuit">swimsuit</label><br>
+
+                        <input type="checkbox" value="swim_top" id="swim_top">
+                        <label for="swim_top">swim_top</label><br>
+
+                        <input type="checkbox" value="swim_bottom" id="swim_bottom">
+                        <label for="swim_bottom">swim_bottom</label><br>
+
+                        <input type="checkbox" value="mc_uniform" id="mc_uniform">
+                        <label for="mc_uniform">mc_uniform</label><br>
+
+                        <input type="checkbox" value="black" id="black">
+                        <label for="black">black</label><br>
+
+                        <input type="checkbox" value="white" id="white">
+                        <label for="white">white</label><br>
+
+                        <input type="checkbox" value="cheerleader" id="cheerleader">
+                        <label for="cheerleader">cheerleader</label><br>
+
+                        <input type="checkbox" value="cheer_top" id="cheer_top">
+                        <label for="cheer_top">cheer_top</label><br>
+
+                        <input type="checkbox" value="cheer_bottom" id="cheer_bottom">
+                        <label for="cheer_bottom">cheer_bottom</label><br>
+
+                        <input type="checkbox" value="party" id="party">
+                        <label for="party">party</label><br>
+
+                        <input type="checkbox" value="elegant" id="elegant">
+                        <label for="elegant">elegant</label><br>
+
+                        <input type="checkbox" value="accessory" id="accessory">
+                        <label for="accessory">accessory</label><br>
+                        
+                        <input type="checkbox" value="lenard_shop" id="lenard_shop">
+                        <label for="lenard_shop">lenard_shop</label><br>
+
+                        <input type="checkbox" value="cosplay_top" id="cosplay_top">
+                        <label for="cosplay_top">cosplay_top</label><br>
+
+                        <input type="checkbox" value="cosplay_bottom" id="cosplay_bottom">
+                        <label for="cosplay_bottom">cosplay_bottom</label><br>
+
+                        <input type="checkbox" value="hooker_top" id="hooker_top">
+                        <label for="hooker_top">hooker_top</label><br>
+
+                        <input type="checkbox" value="hooker_bottom" id="hooker_bottom">
+                        <label for="hooker_bottom">hooker_bottom</label><br>
+                    </div>
+
+                    Available in Shops: <br>
+                    <input type="text" id="shops_list" size="35"><br>
+                    <br>
+                    Export:<br>
+                    <a class="button" id="save_items_file" href="#" download="items.txt" >WRITE items.txt</a>
+                    <a class="button" id="save_shops_file" href="#" download="shops.txt" >WRITE shops.txt</a>
+                </form>
+            </div>
+        </div>
+    <script type="text/python">
+
+    from browser import bind, html
+    from browser import window as data
+    from browser import document as doc
+
+    itm_mem = {}
+
+    @bind(doc['toggle_body'], 'click')
+    def toggle_body(event=None):
+        if event:
+            if event.target.checked:
+                doc['pc_hair'].style.display = ''
+                doc['pc_body'].style.display = ''
+            else:    
+                doc['pc_hair'].style.display = 'none'
+                doc['pc_body'].style.display = 'none'
+        else:
+            if doc['pc_hair'].style.display == 'none':
+                doc['pc_hair'].style.display = ''
+                doc['pc_body'].style.display = ''
+                doc['toggle_body'].checked = True
+            else:
+                doc['pc_hair'].style.display = 'none'
+                doc['pc_body'].style.display = 'none'
+                doc['toggle_body'].checked = False
+
+    @bind(doc['run_filter'], 'click')
+    def run_filter(event=None):
+        filter_cmd = doc['filter_cmd'].value
+        doc["itm_select"].clear()
+        for itm_id, itm in itm_mem.items():
+            l=locals().copy()
+            l.update(itm)
+            try:
+                filter_eval = True
+                if filter_cmd:
+                    filter_eval = eval(filter_cmd, l)
+                if filter_eval:
+                    doc["itm_select"].appendChild(html.OPTION(itm_id, value=itm_id))
+            except Exception as e:
+                print(e)
+
+    @bind(doc['itm_select'], 'input')
+    def update(event=None):
+        dropdown = event.target
+        num = dropdown.selectedIndex
+        if num > -1:
+            new_itm_id = dropdown.options[num].value
+        else:
+            return
+        doc["itm_id"].value = new_itm_id
+        doc["itm_name"].value = itm_mem[new_itm_id]['name']
+        doc["itm_img"].value = itm_mem[new_itm_id]['img']
+        doc["itm_value"].value = itm_mem[new_itm_id]['value']
+        doc["itm_slot"].value = itm_mem[new_itm_id]['slot']
+
+        if itm_mem[new_itm_id]['img']:
+            doc["preview_img"].srcset ='../'+itm_mem[new_itm_id]['img']
+        else:
+            doc["preview_img"].srcset ='../img/pc/_blank.webp'
+
+        for checkbox in doc.get(selector='input[type="checkbox"]'):
+            checkbox.checked = False
+
+        for tag in itm_mem[new_itm_id]['tags']:
+            doc[tag].checked = True
+
+
+        for option in doc["itm_slutty"].children:
+            if option.value == str(itm_mem[new_itm_id]['slutty']):
+                option.selected = True
+            else:
+                option.selected = False
+
+        doc["shops_list"].value =''
+        for shop_id in itm_mem[new_itm_id]['shop']:
+            doc["shops_list"].value +=  shop_id+', '
+
+    @bind(doc['save_shops_file'], 'mousedown')
+    def write_shops(event=None):
+        shops = {}
+        for itm_id, itm in itm_mem.items():
+            if itm['shop']:
+                for shop in itm['shop']:
+                    if shop in shops:
+                        shops[shop].append(itm_id)
+                    else:
+                        shops[shop] = [itm_id]
+        export_data = '// Copyright 2021 Shark in a Hat. All Rights Reserved.%0D%0A'
+        export_data += 'var shops = {%0D%0A'
+        for shop, itms in shops.items():
+            export_data += f'    "{shop}":[%0D%0A'
+            for itm_id in itms:
+                export_data += f'        "{itm_id}",%0D%0A'
+            export_data += '        ],%0D%0A'
+        export_data +='%0D%0A};'
+        # ask user to save file
+        doc['save_shops_file'].href = 'data:text/plain,' + export_data
+
+    @bind(doc['save_items_file'], 'mousedown')
+    def write_items(event=None):
+        export_data = '// Copyright 2021 Shark in a Hat. All Rights Reserved.%0D%0A'
+        export_data += 'var items = {%0D%0A'
+
+        for itm_id, itm_data in itm_mem.items():
+            export_data += f'    "{itm_id}":{{%0D%0A'
+            export_data += f'         "name":"{itm_data["name"]}",%0D%0A'
+            export_data += f'         "img":"{itm_data["img"]}",%0D%0A'
+            export_data += f'         "slot":"{itm_data["slot"]}",%0D%0A'
+            export_data += f'         "tags":{itm_data["tags"]},%0D%0A'
+            export_data += f'         "slutty":{itm_data["slutty"]},%0D%0A'
+            export_data += f'         "value":{itm_data["value"]},%0D%0A'
+            export_data += '         },%0D%0A'
+        export_data +='%0D%0A};'
+        # ask user to save file
+        doc['save_items_file'].href = 'data:text/plain,' + export_data
+
+    @bind(doc['save'], 'click')
+    def save_to_mem(event=None):
+        itm_id = doc["itm_id"].value
+        itm_data = {}
+        itm_data['name'] = doc["itm_name"].value
+        itm_data['img'] = doc["itm_img"].value
+        itm_data['value'] = doc["itm_value"].value
+        itm_data['slot'] = doc["itm_slot"].value
+        itm_data['tags'] =[]
+        for checkbox in doc.get(selector='input[type="checkbox"]'):
+            if checkbox.checked:
+                itm_data['tags'].append(checkbox.value)
+        itm_data['slutty'] = doc["itm_slutty"][doc["itm_slutty"].selectedIndex].value
+
+        itm_data['shop'] = [i.strip() for i in str(doc["shops_list"].value).split(',') if i]
+
+        if not itm_id:
+            return
+        else:
+            itm_mem[itm_id] = itm_data
+
+    ## Start up
+
+
+    for itm_id in data.items:
+        itm_mem[itm_id] = dict(data.items[itm_id])
+        itm_mem[itm_id]['shop'] = []
+        dropdown = html.OPTION(itm_id, value=itm_id, id=itm_id)
+        doc["itm_select"].appendChild(dropdown)
+
+    for shop in data.shops:
+        for item_id in data.shops[shop]:
+            if item_id in itm_mem:
+                itm_mem[item_id]['shop'].append(shop)
+
+    </script>
+</body>
+</html>
+

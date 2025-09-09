@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!-- '''Plotato Engine license:
+        Copyright 2021-2022 Shark in a Hat (shark_in_a_hat@protonmail.com)
+        Supported by: Matt, CodE, Hina Bergmann, jehefuco, KryperCreeping,
+                  cuckold_yyc, GABRIEL ALFORD, Reld, MrSuicide,
+                  Naurd, Mathieu Gouillart, BettyPage, Maximus,
+                  Theo_Malt, Alex, Foxy'sFan, Dov D Bush, Overseer,
+                  mahena, An Anonymous Benefactor, Joe Steel, David Kindler,
+                  bsnick, BranVan, Jayjay Fan, lea, helena ho, coni,
+                  evilbiscuit, Iroquois Pliskin, Ab, Drunkmilkman,
+                  bouncy4u
+
+        Permission to use, copy, modify, and/or distribute this software
+        for any purpose with or without fee is hereby granted, provided
+        that the above copyright notice and this permission notice
+        appear in all copies.
+
+        THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
+        WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
+        WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
+        THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR
+        CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+        LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+        NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+        CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+        NOTE: While used by the original game/engine dev, this tool remains unofficial.
+              No extra effort has been made to make this editor easy to use or usable for
+              anyone else other than the person that made it. The coding is meh, comments
+              are few and far between, UI is janky with functionality hidden or unobvious.
+
+              You You want any help with this editor - feel free to arsk, but if You REALLY
+              want help - put your money where your mouth is.
+
+    ''' -->
+    <meta name="color-scheme" content="dark">
+    <script type="text/javascript" src="../brython/brython.js"></ script>
+    <script type="text/javascript" src="../brython/brython_modules.js"></script>
+    <title>Plotato Deploy Tool</title>
+    <style type="text/css">
+        *{
+            line-height: 1.4;
+            font-size: 20px;
+            font-family: monospace, monospace;
+        }
+        html {
+            box-sizing: border-box;
+        }
+        body{
+            background-color: rgb(90,90,90);
+            color:  white;
+            text-shadow: 1px 1px 1px black;
+            overscroll-behavior: contain;
+        }
+        textarea{
+            line-height: 1.0;
+            font-size: 14px;
+        }
+        input{
+            line-height: 1.0;
+            margin: 2px;
+        }
+        input[type=checkbox] {
+            transform: scale(1.5);
+        }
+        input[type="file"] {
+            display: none;
+        }
+        details > summary {
+            cursor: pointer;
+        }
+        .pc_img{
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .columns{
+            display: flex;
+            gap: 5px;
+        }
+        .fix_width{
+            width:320px;
+        }
+        .button{
+            font-size: 100%;
+            text-shadow: none;
+            color: black;
+            background: rgb(210, 210, 230);
+            padding: 4px;
+            margin: 2px 0;
+            border: 1px solid gray;
+            border-radius: 2px;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        .button:hover{
+            border: 1px solid blue;
+        }
+        .flex_centered {
+            display: flex;
+            justify-content: center;
+        }
+        .scrollable{
+            max-height: 24em;
+            overflow-y: auto;
+            overflow-x: hidden;
+            overscroll-behavior: contain;
+        }  
+    </style>
+</head>
+<body onload="brython( {debug:0, indexedDB:0} )">
+    <div class='flex_centered'>
+        <form autocomplete="off">
+            <h1>Plotato Deploy Tool </h1>  
+            <div id='how_to' style='display: block;'>          
+                <h2>Instructions:</h2>
+                <ul >
+                    <li>
+                    Click on the button below labled 'Click to select file' and select the 'index_template.html' (it should be in the same directory as this file)
+                    </li>
+                    <li>
+                    Wait a moment for the file to be processes and fill out the form presented to you.
+                    </li>
+                    <li>
+                    Click 'Generate index.html' located at the end of the page to genereate and save a new index.html file using the browser default save-file-as dialog.
+                    </li>
+                    <li>
+                    Click 'Generate plot.txt' below at the end of the page to genereate and save a new empty plot.txt file using the browser default save-file-as dialog.
+                    </li>
+                </ul>    
+                
+                <p>
+                    Load index_template.html:
+                    <label class="button">
+                        <input type="file" id="import_template" name="import_template" accept="index_template.html">Click to select file
+                    </label>
+                </p>
+
+            </div>
+            <div id='main_form_error' style="display: none;">
+                <h1>Error loading template!</h1>            
+                <h2>Some template strings are missing, check if you're loading the right file.</h2>
+            </div>
+
+            <div id='main_form' style="display: none;">
+            </p>
+             Game Title:
+             <input type="text" id="title" size="34" value='My First Game'><br>
+             Icon:
+             <input type="text" id="icon" size="34" value='img/game_192.ico'><br>
+            Author:
+            <input type="text" id="author" size="34" value='Shark in a Hat'><br>
+            Copyright:
+            <input type="text" id="copyright" size="34" value='Copyright 2021-2022 by Shark in a Hat.'><br>
+             License:
+             <input type="text" id="license" size="34" value='ISC license'><br>
+             
+             DataStore prefix:
+             <input type="text" id="db_prefix" size="34" value='my_game_'><br>
+            Custom style sheet:
+             <input type="text" id="stylesheet" size="34" value='style/my_game.css'><br>
+             
+             Monetize buttons:<br>
+             <textarea id="monetize" rows="6" cols="110">
+<div class="uacrisis" id="uacrisis"> <div style="font-size:170%;">SUPPORT UKRAINE</div></div>
+<div class="itchio" id="itchio">Plotato Engine</div>
+<div class="buymeacoffee" id="buymeacoffee">buymeacoffee.com/sharkinahat</div>
+             </textarea><br><br>
+             Monetize buttons callback events:<br>
+             <textarea id="monetize_events" rows="6" cols="110">
+doc['uacrisis'].bind('click', lambda ev: open_url('https://uacrisis.org/en/help-ukraine', True))
+doc['buymeacoffee'].bind('click', lambda ev: open_url('https://www.buymeacoffee.com/sharkinahat', True))
+doc['itchio'].bind('click', lambda ev: open_url('https://shark-in-a-hat.itch.io/plotato-vn-engine', True))
+             </textarea><br><br>
+             
+             New Save Initialization script:<br>
+             <textarea id="new_save" rows="12" cols="110">
+save.version = 1
+save.money = 50
+save.time = 6
+give_clothes_by_tag('start')
+progress_time(0)
+save.map_event_chance = 15
+save.current_location = 'map_home'
+             </textarea><br><br>
+             Start script:<br>
+             <textarea id="startup" rows="12" cols="110">
+_add_choice('NEW GAME', 'True', 'pre_new_game', False)
+_add_choice('CONTINUE...', '"current_plot_node" in save', 'load_last', False)
+_add_choice('CREDITS', 'True', 'credits', False)
+_show_new_img('img/title/title.webp')
+_show('settings')
+            </textarea><br><br>
+             Generate new index.html:
+            <a class="button" id="save_index" href="#" download="index.html" >Generate index.html</a>
+            <br>
+            <br>
+            <br>
+             Generate empty plot.txt:
+            <a class="button" id="save_plot" href='data:text/plain,var notes = "";%0D%0Avar plot = {"pre_new_game":{} };' download="plot.txt" >Generate plot.txt</a>
+            <br>
+            <br>
+            <hr>
+        </div>
+        </form>
+    </div>
+
+<script type="text/python">
+from browser import bind, html
+from browser import window as data
+from browser import document as doc
+
+global index_template
+index_template = None
+
+
+def escape_chars(input_string):
+    output_string = input_string.replace("#", "%23")
+    output_string = output_string.replace("\n", "%0D%0A")
+    return output_string
+
+def add_indent(input_string, num_tabs=3, space_per_tab=4):
+    print(input_string)
+    out_string=''
+    for line in input_string.splitlines():
+        out_string +=' '*num_tabs*space_per_tab
+        out_string += line+'\n'
+    print(out_string)    
+    return out_string  
+
+@bind(doc['import_template'], 'input')
+def load_template(event=None):
+    def _on_load(event):
+        global index_template
+        raw_template = event.target.result
+        # escape special chars
+        index_template = escape_chars(raw_template)
+        #check for template strings
+        if ('___TEMPLATE_AUTHOR___' in index_template
+           and '___TEMPLATE_COPYRIGHT___' in index_template
+           and '___TEMPLATE_LICENSE___'  in index_template
+           and '___TEMPLATE_ICON___' in index_template
+           and '___TEMPLATE_STYLE___' in index_template
+           and '___TEMPLATE_TITLE___' in index_template
+           and '___TEMPLATE_PREFIX___' in index_template
+           and '___TEMPLATE_MONETIZE_BUTTONS___' in index_template
+           and '___TEMPLATE_MONETIZE_SCRIPT___' in index_template
+           and '___TEMPLATE_NEW_SAVE_SCRIPT___' in index_template
+           and '___TEMPLATE_INIT_SCRIPT___' in index_template):
+            doc['import_template'].value = ''
+            doc['main_form'].style.display = ''
+            doc['how_to'].style.display = 'none'            
+        else:
+            doc['main_form_error'].style.display = ''
+        
+
+    template_file = doc['import_template'].files[0]
+    # window is data
+    reader = data.FileReader.new()
+    reader.readAsText(template_file)
+    reader.bind('load', _on_load)
+
+
+@bind(doc['save_index'], 'mousedown')
+def write_index(event=None): 
+    global index_template
+    #out_index = index_template.replace('{hash}', '#')
+    out_index = index_template.replace('___TEMPLATE_AUTHOR___', doc['author'].value)
+    out_index = out_index.replace('___TEMPLATE_COPYRIGHT___', doc['copyright'].value)
+    out_index = out_index.replace('___TEMPLATE_LICENSE___', doc['license'].value)
+    out_index = out_index.replace('___TEMPLATE_ICON___', doc['icon'].value)
+    out_index = out_index.replace('___TEMPLATE_STYLE___', doc['stylesheet'].value)
+    out_index = out_index.replace('___TEMPLATE_TITLE___', doc['title'].value)
+    out_index = out_index.replace('___TEMPLATE_PREFIX___', doc['db_prefix'].value)
+    out_index = out_index.replace('___TEMPLATE_MONETIZE_BUTTONS___', escape_chars(doc['monetize'].value))
+    out_index = out_index.replace('___TEMPLATE_MONETIZE_SCRIPT___', escape_chars(add_indent(doc['monetize_events'].value)))
+    out_index = out_index.replace('___TEMPLATE_NEW_SAVE_SCRIPT___', escape_chars(add_indent(doc['new_save'].value)))
+    out_index = out_index.replace('___TEMPLATE_INIT_SCRIPT___', escape_chars(add_indent(doc['startup'].value)))
+    doc['save_index'].href = 'data:text/plain,' + out_index
+
+
+</script>
+</body>
+</html>
+

@@ -1,0 +1,437 @@
+v.0.15:
+-fix for day 0
+-fix for paying rent with clothes on (who'd do that?!)
+-hooker clothes
+-engine/technical improvements
+  -random event dispatch (?)
+  -wide npc support
+  -f-stings in branch targets 
+  -inline woff2 fonts  
+  -option inline everything into one big file (150MB with img, 400MB with mp3)
+  -converted all images to webp
+  -better UI for save slots mod
+  
+
+v0.14:
+-avatar improvements
+-day/night filter changes
+-f-strings in image name
+-repeatable work at the porn studio (multiple variants)
+-bar health inspection
+-bar day deliveries (multiple variants)
+-bar night deliveries (multiple variants)
+-random encounter: hypnotist (some variants)
+-gym is removed
+-school is temporary locked down
+-new home
+-interruption events while masturbating (multiple variants)
+-ordering pizza when out of food
+-encounter with a girl and her horse when wondering the park naked
+-encounter with a girl taking selfies when wondering the park naked
+-xmas event (triggered during IRL December when sleeping at the new home when it's dark)
+-morning of day 21
+-new and improved bugs!
+
+v0.13: (This is a small update)
+- new wardrobe UI (buttons for items, preview on hover)
+-first delivery job at the bar
+-repeatable job at the porn studio
+-bug fixes
+-next game teaser
+
+v0.12:
+-clothing preview in shops on mouse hover
+-added check_irl_month() function
+-Always Holiday Mod (x-mass and halloween events independent of IRL month)
+-friday (day 18) morning, on the bus and school events
+-weekend night choices:
+- in school (exhibition, gangbag)
+- in storage locker (exhibition, janitor action)
+- at the park (exhibition, wolf action)
+- at Lenard's House (oral action, sleep sex, NTR?)
+- at Lenard's hotel room (exhibition, bondage, NTR?)
+- at Marco's house (exhibition, D&D, girl-on-girl)
+- at the slums (bondage, non-con, short)
+- rpg/nerd/game/comic convention on Saturday (starts at the mall, uless doing Marco's home or Lenard's hotel path)
+-reuniting with Mom on day 20
+-bug fixes
+-new bugs
+
+0.11:
+-clothing preview in shops on mouse hover
+-added check_irl_month() function 
+-Always Holiday Mod (x-mass and halloween events independent of IRL month)
+-friday (day 18) morning, on the bus and school events
+-weekend night choices:
+  - in school (exhibition, gangbag)
+  - in storage locker (exhibition, janitor action)
+  - at the park (exhibition, wolf action)
+  - at Lenard's House (oral action, sleep sex, NTR?)
+  - at Lenard's hotel room (exhibition, bondage, NTR?)
+  - at Marco's house (exhibition, D&D, girl-on-girl)
+  - at the slums (bondage, non-con, short)
+- rpg/nerd/game/comic convention on Saturday (starts at the mall, uless doing Marco's home or Lenard's hotel path)
+-bug fixes  
+
+
+0.10:
+- school uniform inforecement 
+- butt plugs!
+- photo studio solo job 
+- photo studio lesbian shoot
+- porn film audition 
+- spellchecking (Kudos to overseer. Are kid still giving out kudos these days? Man, I feel old... )
+
+0.9.1:
+- bug fixes
+- modal box stacking
+- mod to change text font (Atkinson Hyperlegible )
+
+todo later:
+-hunger -> Ben with a jar of cum
+-GYM
+-Friday (sch_lesson2_day_18) - Bio with HM
+-FRIDAY (school_day_17) morning HM ?
+  - weekend couch surfing 
+      -lenard home
+          - molested as maid
+          - found in shower
+          - kicked out by mom -> lenard hotel
+      -lenard hotel
+      -marco
+        - dnd
+        - cosplay at convention
+      -school
+      -park
+      -storage unit
+  - stripper work at club
+  - becoming an e-girl (Jeff or Marco help?)
+  - bar work
+  - evening at spa  
+  - photo shoot (beach, glamour)
+  - club
+  - slum prostitution
+  - work at spa
+  - cafe work
+  - more school events  
+  - more park events (zuza)
+
+0.9:
+-Brython updated
+-Bug fixes
+-Continuation of the lost ring arc
+-Ben's bad end 
+-School days 14-17
+-Secret spooky event  
+
+0.8:
+- new title screen
+- fallback for localStorage
+- more graceful loading
+- toolset improvements
+- complete manual
+- shops can now 'sell' items for free
+- bar work, shifts 5 and 6
+- fun at beach (~6 small, random events)
+- event at spa where you can get a boob massage that will change the avatar/paperdoll picture (per request)
+- 2x WC events at school( contains watersports, per request) 
+- weekend pool party
+- plot twist #1
+
+0.7.1:
+- restored old version of Brython
+- smaller monetize buttons (auto-adjusting size)
+- restored corrupted style/sluted.css
+- time of day display showing a more correct day name at night
+- added option to look for gossip at school
+- added option to skip random school events
+- save slots mod upgraded to use a modal pop-up
+- added hide button to main text and click-anywhere-to-show main text feature
+- removed hide/show text from the menu
+- hide text also hides choice and corner buttons
+- some fixes for missing clothes softlocks
+- fixed softlock for too slutty outfit on day1
+- second chance to join cheerleaders if the first one failed
+- new public exposure night events
+- for old saves ask if pc is a cheerleader after day4
+- editor improvements (moved some panels to the left, the right sidepanel is now dragable) 
+- park doggy event (day, x2 night)
+- typos/spelling
+- pod racer npc sprite
+- 3rd shift at Caffe (some bdsm)
+- 3rd and 4rth shift at bar
+- community clothes
+- changes to swimwear sluttiness calculation and stats 
+ - walk around nude at park (during day)
+
+0.7:
+- millennium hand and shrimp
+- fixed typos and spelling (credit due Dean and Overseer)
+- errors logged into _error_log
+- disabled pull-to-refresh on mobile
+- added jump to home to cheat menu
+- save slot mod (now working!)
+- fixed saving to file (protocol upped to 4)
+- get_equipped() can take a list/tuple/set as the last arg to exclude multiple tags
+- removed Monero button (total earnings: $0.00)
+- tts actors can be set/overridden from plot txt fields using f-stings eg. {tts_actor('mnpc')}
+- removed all global() because of Brython bugs.
+- current node is no longer written to save ( now it's in data.glob._current)
+- updated Brython (e45d525)
+- drug overlay effect works correct(-ish) on chrome for android
+- slut stat update slows down after reaching certain breakpoints
+- fixed credits
+- fixed dead end on weekend map event
+- fixed weekend map explore dead end
+- fixed subnode cloning in editor to use copy.deepcopy
+- removing nodes in editor works as intended (...kind of)
+- when resting you can choose for how long
+- from week 2 (if mc is a cheerleader) - cheerleader outfit is a valid school uniform
+- remove quest text on finished training and bodypaint events
+- reimplemented random_branch handling, events will not repeat until all other events have triggered for a given node
+- fixed repeating photo studio job
+- school days 7, 8, 9, 10, 11 all have 2-3 random events (+normal 'plot' events)
+  these events may be different based on what you wear (slutty, non-slutty, cheerleader),
+  if you've eaten or not, on previous events, on Ben being in jail (oops spoilers) and RNGeesus.
+
+
+0.6b - 1.6.5:
+- 2 new events that can trigger randomly when shopping at the Cat's Paw.
+- First job at the studio
+- fixed missing paper doll when getting dressed on the school roof
+- fixed lockout when last outfit gets too slutty to wear at school roof
+- set_clothes accepts *args and **kwargs - can be use like set_clothes('hat','sock') but set_clothes(['hat','sock']) still works
+- several plot nodes cleaned up and divided into smaller chunks
+- new paperdoll face
+- removed old paperdoll face from some images (prologue, spa)
+- nude and last outfit options added to the outfit panel
+- reimplemented check_uniform() to be more reliable
+- added day 2 morning uniform check
+- fixed typos (credit to Overseer)
+- added more smiles
+- save cleanup (after day 5)
+- parallax images restored on load
+- remove_flag can take a set as an arguments for deleting multiple flags
+- refactored modal callback (removed global)
+- food properly removed on some nodes
+- save version updated to 3
+- fix to editor for finding quests
+
+
+
+0.6a - 1.5.5:
+- added subplot cloning to the editor
+- improved roof pics
+- fixed credits bug
+- fixed missing text on Sunday morning causing a lock out.
+- fixed (?) some TTS bugs happening on Android
+- fixed typos
+- taking a nap at the weekend progresses time by 4 hours
+- the word 'Russian' has been removed from the game.
+0.6 - 1.5.5:
+- Weekend date with Lenard (many routes!)
+- Weekend cheerleader training
+- Friday day at school
+- Spa content (some)
+- updated clothes (new party and elegant tags)
+- savable outfits
+- added cum on face overlay
+- rain overlay fx
+- added moving bus background fx
+- added Monero donations button
+- moved game specific css into separate stylesheet
+- moved tts voice setup data to a external file
+- added big lips face set (can be changed in spa, currently not reversible!)
+- try/catch/except blocks for all TTS functions (should fix android problems?)
+- added support for Time Critical Events (needed for Lenard date and bodypaint job)
+- added has_clothes_by_tag() function
+- added count_clothes_by_tag() function
+- added support for face customization on paperdoll
+- added support for tattoos and piercings on paperdoll
+- added support for tattoos and piercings on fullscreen images
+- plot editor improvements
+- updated Brython to 3.10.4
+
+0.5b:
+- fixed clothing stats
+- maid/slutty/less slutty shop filters
+- plot fixes
+- for online use - report to the use where it was loaded from
+0.5-1.4.5
+NEW SAVE RECOMMENDED!
+- school adventures for 2 more days
+- updated Brython to 3.10.3
+- updated Electron to v16.0.4 (for standalone version)
+- improvements to the plot editor
+- added mod menu
+- updated the sample pub hair mod (haircuts by mrnow19)
+- removed console
+- added cheat mod
+- added console to cheat mod
+- added hide mod (changes the title on the tab in a browser to something SFW)
+- updated supporters list in engine and tools headers and the in-game credits
+- added quest log
+- added quest log entries
+- added skip prologue button
+- updated tutorial
+- changed set_time_of_day() implementation
+- only open external links with https protocol in electron version
+- added set_hard_datetime(day, hour) function to the start of each day, so the time/date gets reset even if something else goes wrong
+- all calls to progress_time() moved to separate nodes or wrapped in exec_once
+- any movement on map at TIME.NIGHT will send you to bed
+- changes in clothing marked as sport
+- new clothes
+- changes in lewdness formula
+- public exposure events use the better RNG function
+- public exposure events now progress time
+- exploring map (for the first time) should not trigger map events
+- slut stat bumped only once per map event
+- new set of events for public indecency (when UNDRESSED+EXPOSED)
+- improved reaction of Cafe Manager if wearing bdsm gear as panties
+- swimwear lewdness 'discount' only applied if boobs and pussy are not on display
+- starting a new game will correctly clear local storage data
+- fixed css bug preventing animation playback
+- img are shown for branch nodes
+- nag/thanks added to new game background img
+- map image changes based on time of day
+
+
+TODO:
+- last lesson clear skin
+-stats
+-music
+
+
+0.4a-1.3.4:
+Changes:
+- initial sluttines set to 0 (was 1)
+- cut clothes are less slutty (12->7 when not wearing anything else)
+- added extra branch for makeover, when not wearing undies
+- added extra clothing check when leaving the beach
+- added missing student encounter
+- added missing bj scene
+- added correct music to some scenes/locations
+- can steal food even with a lot of money
+- locations with content should send you to school if it's a weekday morning
+
+Fixed bugs:
+- fixed error in the subway hiring process. (botomless->bottomless)
+- fixed error when doing homework ('get_flags' is not defined)
+- fixed Plot error: "public_exposure_student" is empty.
+- spywear->spyware
+- fixed error when you don't wear panties the first day (sort of)
+- fixed photo studio dead end (no content there yet)
+- game should allow to put on any clothes if there is no valid selection of last saved clothes
+- shows a to-be-continued screen if you somehow (how!?) managed to get to the next school day without going to bed
+Notes:
+- I'm not sure if I got all the cases covered where MC needs to change clothes, but there are no valid clothes to choose from.
+If you find yourself in a situation like this - don't panic. Press the tilde (~), type in 'change_clothes(enforce_stats=0)' and click execute - this should bring up the interface for changing clothes with all your current clothes and no restrictions on what you can wear.
+
+
+0.4-1.3.4:
+- added a buymeacoffee button on title screen (pls send moneys!)
+- updated the in-game version number to match the actual version number (d'uh)
+- enable loading the same save more than once
+- fix error with text-to-speech, where no voices are provided by the OS (aka linux error spam bug)
+- early exit in _speak() when volume is 0
+- more fail safe added
+- added extra message when loading the games takes too long
+- mod manager fix for mods with comments
+- added pubic hair mod as a sample mod
+- fixed issue with cut clothes
+- clothes dropdown now correctly updates when buying new clothes
+- at Docs MC is no longer forced-striped if she has bra and panties on (only striped if she has bra but no panties)
+- can no longer leave the nurse office without clothes or with tits/pussy showing
+- Ben now gives a free pass in one more path
+- free pass for day 2 is now remembered (you may need to replay day 1 if you have low rep with Ben and got the free pass)
+- MC reacts less haughty when striping with missing underwear
+- when exploring the city time will not progress when finding locations with no content
+- removed leg vibrator and clothe pins  from shops (you'll get a refund if you got it in your inventory)
+- removed duplicated items from shops
+- removed the Odds and Ends shop
+- all swimwear now has the 'swimwear' tag
+- all skirts and dresses are now in the dress shop (except the ones that are too lewd)
+- sports clothes, swimsuits and bikinis are now in the sport shop (with some lewd exceptions)
+- all shirts and tops are in the shirt shop (with some lewd exceptions)
+- underwear and stockings are in the lingerie shop (with some lewd exceptions)
+- pants, jeans, and denim clothing are in the denim shop (with some lewd exceptions)
+- all kinky, short and transparent clothes are in the sex shop
+- items that fit many categories are... well, all over the place
+- swimwear and sports clothing have lowered lewdness stats if forming a sport/swim outfit
+- maid outfits properly identified as maid outfits (yes, no bottom is a valid maid outfit!)
+- shops remember last shopping cart content even when loading a save while in a shop
+- items in shops are now sorted by name
+- swimwear filter added
+- money is now visible in the status/timer
+- if giftcard was activated the money is now removed the next day
+- you may lose more money then you should when the giftcard gets invalidated, blame the company that issued it - O/\[]
+- game now keeps track of when you've eaten
+- you can cook at home
+- shop for food products in mall
+- MC can steal food in mall (with low money)
+- chance to get caught when stealing
+- chance to meet Punk Girl when stealing (3+ things stolen)
+- MC can get a job at the pub (basic for now)
+- MC can get a job at the cafe (2 shifts for now)
+- MC can go to the beach (swimming, peeking, getting peeked at)
+- MC can get a job at the bar (basic for now)
+- free roaming after day 2 of school (even after meeting the gopnik)
+- going around town undressed/exposed
+- all animations should now respect the 'reduced motion' settings
+- added overlay image for player avatar
+- drugged css overlay effect
+- error messages use f-strings
+- big ass arrows in plot editor
+- search added to editor
+- execute python snippet in editor
+- bumped engine version to 1.3
+- bumped data version to 0.4
+- new bugs, probably(?)
+
+0.3-1.2.4 (still janky alpha)
+Note: This game version may have many bugs. Expect a bugfix version/patch within a week.
+- added css for fog/dust/steam animation overlay
+- added mods support
+- added mod manager (dev/mod_manager.html)
+- plot editor now saves the data using JSON.serialize, it's fast but ugly
+- minor plot editor improvements
+- added rollback feature
+- added history feature
+- error messages should now really be shown
+- error messages can be dismissed
+- added voice setup for new npc
+- fixed more dead ends
+- show feedback when clothes lewdness is not enforced (can wear anything/nothing at home)
+- changing clothes can now be limited to only the clothes you have with you (last equiped set)
+- Plot: a new morning
+- Plot: next day at school (Ben shenanigans, Mr. Nurse examination)
+- Plot (optional): library 'treasure' hunt
+- Plot (optional): gopnik encounter
+- Berries and Cream
+- removed some unused pictures
+- bumped css version to 4
+- bumped engine version to 1.2
+- bumped data version to 0.3
+- new bugs, probably.
+
+0.2-1.1.3:(bugfix patch #1)
+- game viewport will (try to) adjust to the window height
+- text on buttons won't adjust to window size, but will respect user font size settings
+- stockings are drawn on top of panties
+- automatically equip clothes you buy
+- you can buy (try out) clothes even if you can't afford them (but can't exit shop with negative $$$)
+- fixed plot dead ends
+- fixed some typos
+- an error message is displayed when reaching an unexpected dead end
+- flood-fill node coloring in plot editor
+- restored the try-except block for the startup procedure
+- game can be hosted online (only shows a warning and not exits with a error on startup)
+- show an error when javascript is disabled
+- added fail-safe for random branches not picking any branch
+- added warning.txt to image folder
+- all characters are now 18 years old or older
+- all characters are now 21 years old or older if you're playing in a country with laws saying they must be 21 years old or older
+- bumped css version to 3
+- bumped engine version to 1.1
+- bumped data version to 0.2
+- new bugs, probably.

@@ -1,0 +1,9 @@
+// Copyright 2021 Shark in a Hat. All Rights Reserved.
+/*
+The files in this directory are NOT part of the Plotato Engine and are NOT distributed under the ISC License.
+
+    You are allowed to:
+    - Redistribute the files without alterations as part of the SlutED game.
+    - View/change/alter/edit/modify the files for any educational or personal use.
+    - Change/alter/edit/modify and distribute the files to create NON COMMERCIAL mods for the SlutED game.
+*/
